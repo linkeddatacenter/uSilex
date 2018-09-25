@@ -1,17 +1,18 @@
 # µSILEX
-µSSILEX ( aka micro silex)  is a super micro kernel based on Pimple and http_foundation Symfony classes.
+µSILEX (aka micro silex)  is a super micro framework based on Pimple and Symfony http_foundation  classes.
 
-Silex was a great project now abandoned because it can be substituted with Symfony and Flex. This is true only if you need more or the just the same power of Silex.  
-But you have to pay a price in terms of complexity, memory footprint and performances.
+Silex was a great project now migrated to Symfony and Flex. This is good when if you need more power and flexibility.  
+But you have to pay a price in terms of complexity and memory footprint.
 
-µSilex covers a small subset of the original Silex projecy: no caching, no security, no authentication, no middleware, no event, no views, no template etc, etc.
+µSilex covers a small subset of the original Silex projecy: no caching, no security, no authentication, no middleware, no event, no views, no template, etc, etc. 
 
-As a matter of fact, in the JAMStack, Docker and XaaS era, you can let these features to other components in the system application architecture.
+As a matter of fact, in the JAMStack, Docker and XaaS era, you can let all these features to other components in the system application architecture.
 
-This micro framework is a try to realize a framework for developing APIs endpoints 
+This project is a try to build a framework for developing APIs endpoints 
 that require maximum performances
 with a minimum of memory footprint (e.g. micro services, smart proxies, gateway, adaptors, etc, etc).
 
+Have a nice day!
 
 ## Install
 
