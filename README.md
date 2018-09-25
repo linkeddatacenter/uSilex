@@ -1,14 +1,16 @@
 # µSILEX
-µSSILEX ( aka micro silex)  is a super micro kernel based on Pimple and http_foundation Symfony core classes.
+µSSILEX ( aka micro silex)  is a super micro kernel based on Pimple and http_foundation Symfony classes.
 
-Silex was a great project abbandoned because it can be substituted with Symfony with Flex. This is true only if you need more or the 
-just the same power of Silex.  But you have to pay a price in terms of memory footprint and performances. 
-µSilex covers a subset of the original Silex projecy: no caching, no security and authentication, no middleware, no event,
-no views, no template etc, etc. 
-In the JAMStack, Docker and XaaS era, you can let these features to other components in the system application architecture.
+Silex was a great project now abandoned because it can be substituted with Symfony and Flex. This is true only if you need more or the just the same power of Silex.  
+But you have to pay a price in terms of complexity, memory footprint and performances.
 
-This micro framework is a try to realize a framework for developing APIs endpoints that requires maximum performances
-with a minimum of memory footprint (e.g. smart proxies, gateway, adaptors, etc, etc).
+µSilex covers a small subset of the original Silex projecy: no caching, no security, no authentication, no middleware, no event, no views, no template etc, etc.
+
+As a matter of fact, in the JAMStack, Docker and XaaS era, you can let these features to other components in the system application architecture.
+
+This micro framework is a try to realize a framework for developing APIs endpoints 
+that require maximum performances
+with a minimum of memory footprint (e.g. micro services, smart proxies, gateway, adaptors, etc, etc).
 
 
 ## Install
@@ -19,19 +21,50 @@ with a minimum of memory footprint (e.g. smart proxies, gateway, adaptors, etc, 
 
 ```
 <?php
-require_once __DIR__.'/vendor/autoload.php';
-$app = new \uSILEX\Core\Application;
+require_once __DIR__.'/../vendor/autoload.php';
 
+// create a new application
+$app = new \uSILEX\Application;
+
+// create a service using pimple to be used as controller
 $app['say_hello_controller']= function ($app) {
    return $app->json(['hello', 'world']);
-}
-$app->route('GET', '/', 'say_hello_controller');
+};
+
+// define a route
+$app->addRoute(new \uSILEX\Route('GET', '/', 'say_hello_controller'));
+
+//run the application
 $app->run();
 ```
 
+The routing capability depends mainly from the RouteMatcher service. 
+Write your own Classe to fulfill your needs and register it as a service:
+
+```
+...
+$app = new \uSILEX\Application;
+$app['RouteMatcher'] = function ($c) {
+    return new MyVerySpecialRouteMatcher($c);
+};
+...
+```
+
 See example dir.
+
+## Testing
+
+Using docker:
+
+	$ docker run --rm -ti -v $PWD/.:/app composer install
+	$ docker run --rm -ti -v $PWD/.:/app composer vendor/bin/phpunit
+	$ docker run -d --name apache -v $PWD/.:/var/www/html php:apache
+	$ docker exec -t apache curl http://localhost/examples/
+	["hello","world"]
+	$ docker rm -f apache
 
 ## Credits
 
 uSILEX is inspired form https://symfony.com/doc/current/components/http_foundation.html
 and https://github.com/silexphp/Silex
+by Fabien Potencier <fabien@symfony.com>
