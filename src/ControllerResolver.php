@@ -13,18 +13,18 @@ Class ControllerResolver implements ControllerResolverInterface
     protected $app;
     
     
-    public function __construct( Application $app) 
+    public function __construct(Application $app) 
     {
-        assert( isset($app['RouteMatcher']));
+        assert(isset($app['RouteMatcher']));
         
         $this->app = $app;
     }
 
     public function getController() : string
     {
-        assert( isset($this->app['request']));
+        assert(isset($this->app['request']));
         
-        foreach( $this->app->getRoutes() as $route) {
+        foreach ($this->app->getRoutes() as $route) {
             if ($matches = $this->app['RouteMatcher']->match($route)) {
                 $this->app['request.matches'] = $matches;
                 $this->app['request.route'] = $route;

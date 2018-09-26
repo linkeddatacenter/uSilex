@@ -6,7 +6,7 @@ Class RouteMatcher implements RouteMatcherInterface
 {
     protected $app;
     
-    public function __construct( Application $app) 
+    public function __construct(Application $app) 
     {    
         $this->app = $app;
     }
@@ -14,10 +14,10 @@ Class RouteMatcher implements RouteMatcherInterface
     
     public function match(Route $route) : array 
     {
-        assert( isset($this->app['request']));
+        assert(isset($this->app['request']));
         
-        $verbRegexp= '#^' . $route->getHttpVerb() . '$#i'; // case insensitive
-        $pathRegexp= '#^' . $route->getPath() . '$#'; // case sensitive
+        $verbRegexp = '#^'.$route->getHttpVerb().'$#i'; // case insensitive
+        $pathRegexp = '#^'.$route->getPath().'$#'; // case sensitive
         
         $matches = null;
         try {
