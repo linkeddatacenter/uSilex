@@ -10,7 +10,7 @@ Class Route
     
     public function __construct( string $verb, string $path, string $action) 
     {    
-        $this->verb = strtoupper($verb);
+        $this->verb = $verb;
         $this->path = $path;
         $this->action = $action;
     }
@@ -32,4 +32,5 @@ Class Route
     {
         return $this->action;
     }
+    
 }

@@ -14,17 +14,61 @@ class ApplicationTest extends TestCase
 
     public function testGetRequest()
     {
-        $request = Request::create('/');
 
         $app = new Application();
-        $app['my_controller'] = function (Application $a) use($request) {
-            return $request === $a['request'] ? new Response('ok') : new Response('ko');
+        $app['request'] = Request::create('/pippo');
+        
+        $app['my_controller'] = function (Application $a) {
+            return new Response('ok');
         };
-        $app->addRoute( new Route('GET', '/', 'my_controller'));
+        $testRoute = new Route('GET', '/(pippo)', 'my_controller');
+        $app->addRoute( $testRoute);
         
-        $app['request'] = $request;
+        $response = $app->handleRequest();
         
-        $this->assertEquals('ok', $app->handle()->getContent());
+        $this->assertEquals($testRoute, $app['request.route']);
+        $this->assertCount(2, $app['request.matches']);
+        $this->assertEquals('pippo', $app['request.matches'][1]);
+        $this->assertEquals('ok', $response->getContent());
+    }
+    
+    
+    public function testOn_route_match()
+    {
+        
+        $app = new Application();
+        $app['request'] = Request::create('/pluto');
+        
+        $app['on_route_match'] = function (Application $a) {
+            $a['request.myparam'] = $a['request.matches'][1];
+            return true;
+        };
+        
+        $app['my_controller'] = function (Application $a) {
+            return new Response($a['request.myparam']);
+        };
+        
+        $app->addRoute( new Route('GET', '/(.*)', 'my_controller'));
+        $response = $app->handleRequest();
+
+        $this->assertEquals('pluto', $response->getContent());
+    }
+    
+    
+    
+    public function testOn_response()
+    {
+        $app = new Application();
+        $app['response'] = new Response('OK');
+        $app['uSILEX_IGNORE_SEND'] = true;
+          
+        $app['on_response'] = function (Application $a) {
+            return new Response( $a['response']->getContent(). ' CONFIRMED');
+        };
+        
+        $app->run();
+        
+        $this->assertEquals('OK CONFIRMED', $app['response']->getContent());
     }
     
 

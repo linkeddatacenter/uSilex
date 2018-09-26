@@ -22,9 +22,12 @@ Class ControllerResolver implements ControllerResolverInterface
 
     public function getController() : string
     {
+        assert( isset($this->app['request']));
         
         foreach( $this->app->getRoutes() as $route) {
-            if ($this->app['RouteMatcher']->match($route)) {
+            if ($matches = $this->app['RouteMatcher']->match($route)) {
+                $this->app['request.matches'] = $matches;
+                $this->app['request.route'] = $route;
                 return $route->getAction();
             }
         }

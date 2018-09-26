@@ -6,7 +6,7 @@ class RouteTest extends TestCase
 {
     public function testRoute()
     {
-        $route = new Route('get','/b','c');
+        $route = new Route('GET','/b','c');
         $this->assertEquals('GET', $route->getHttpVerb());
         $this->assertEquals('/b', $route->getPath());
         $this->assertEquals('c', $route->getAction());

@@ -82,21 +82,29 @@ class Application extends Container
     }
     
     
-    public function handle(): Response 
+    public function handleRequest(): Response 
     {
         assert( isset($this['ControllerResolver']));
+        assert( isset($this['request']));
         
         try {
             if (!$this->booted) {
                 $this->boot();
             }
             
+            
             // execute the controller action
             $controllerService = $this['ControllerResolver']->getController();
             
             assert(isset($this[$controllerService]));
             
-            $response = $this[$controllerService];
+            // call on_route_match hook
+            if( isset($this['on_route_match'])) {
+                $this['on_route_match.result'] = $this['on_route_match'];
+            }
+            
+            $response = $response = $this[$controllerService];
+              
             
         } catch (Exception $e) {
             $response = exceptionToResponse($e);
@@ -182,10 +190,26 @@ class Application extends Container
      */
     public function run()
     {
-        $this['request'] = Request::createFromGlobals();
+        // define $this['request'] just for testing purposes
+        if (!isset($this['request'])) {
+            $this['request'] = Request::createFromGlobals();
+        }
         
-        $response = $this->handle();
-        $response->send();
+        // define $this['response'] just for testing purposes
+        if (!isset($this['response'])) {
+            $this['response'] = $this->handleRequest();
+        }
+        
+        // call on_response hook
+        if( isset($this['on_response'])) {
+            $this['response'] = $this['on_response'];
+        }
+        
+        // define $this['uSILEX_IGNORE_SEND'] just for unit testing purposes
+        if( !( isset($this['uSILEX_IGNORE_SEND']) &&  $this['uSILEX_IGNORE_SEND'])) {
+            $this['response']->send();
+        } 
+        
     }
     
 }

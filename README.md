@@ -1,10 +1,15 @@
-# µSILEX
+µSILEX
+======
+[![Build Status](https://travis-ci.org/linkeddatacenter/uSILEX.svg?branch=master)](https://travis-ci.org/linkeddatacenter/uSILEX.svg)
+[![Code Coverage](https://scrutinizer-ci.com/g/linkeddatacenter/uSILEX.svg/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSILEX.svg/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/linkeddatacenter/uSILEX.svg/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSILEX.svg/?branch=master)
+
 µSILEX (aka micro silex)  is a super micro framework based on Pimple and Symfony http_foundation  classes.
 
 Silex was a great project now migrated to Symfony and Flex. This is good when if you need more power and flexibility.  
 But you have to pay a price in terms of complexity and memory footprint.
 
-µSilex covers a small subset of the original Silex projecy: no caching, no security, no authentication, no middleware, no event, no views, no template, etc, etc. 
+µSilex covers a small subset of the original Silex projecy: no caching, no security, no authentication, limited middleware,  limited view support, no template, etc, etc. 
 
 As a matter of fact, in the JAMStack, Docker and XaaS era, you can let all these features to other components in the system application architecture.
 
@@ -32,6 +37,7 @@ $app['say_hello_controller']= function ($app) {
    return $app->json(['hello', 'world']);
 };
 
+
 // define a route
 $app->addRoute(new \uSILEX\Route('GET', '/', 'say_hello_controller'));
 
@@ -39,8 +45,26 @@ $app->addRoute(new \uSILEX\Route('GET', '/', 'say_hello_controller'));
 $app->run();
 ```
 
+## Routing
+
+The default routing policy of µSILEX does not support uri templates.
+
+Default routing considers the first and the second argument of a new Route as a regular expression fragments. For instance 'GET' is computed as '#^GET$#' and '/' as '#^/$#' . This means that ^ and $ are always inserted and that the hash character need to be escaped.
+
+In controllers, *$app['request.route']* contains the matched route and  *$app['request.matches']* contains the  regular expression  matches results on the route path (i.e. internally something similar to `preg_match($this->app['request.route']->getPath(),$this->app['request']->getPathInfo(),$this->app['request.matches'])` is used) and . For example:
+
+	$app->addRoute(new Route('(GET|POST)', '/id/([0-9]+)', 'my_controller'));	
+	$app['my_controller'] = function (Application $a) {
+		$method = $a['request']->getMethod();
+		$p1 = $a['request.matches][1];
+		return new Response( "$method $p1 id");
+	}
+
+
+## Customize routing
+
 The routing capability depends mainly from the RouteMatcher service. 
-Write your own Classe to fulfill your needs and register it as a service:
+Write your own class that fulfill your needs and register it as a service:
 
 ```
 ...
@@ -51,7 +75,36 @@ $app['RouteMatcher'] = function ($c) {
 ...
 ```
 
-See example dir.
+You can also redefine the $app['ControllerResolver'] service to change all the routing strategy.
+
+
+## middleware
+
+The middleware management capability is limited to a couple hooked services:
+
+### on_route_match
+
+	$app['on_route_match'] = function(Application $app){ };
+ 
+this service is called when a request  matches a  route. If the default ControllerResolver implementation is used, then, inside on_route_match service you can access 
+$app['request.matches'] and $app['request.route'].
+
+'request.match.result' and 'request.match.route' are also available inside any controller.
+
+### on_response
+
+	$app['on_response'] = function(Application $app){ };
+
+this service is called after the controller.  
+$app['response'] contains the the response returned by the executed controller.This is an unique opportunity to change response before it is sent back to the client
+
+## Response type
+
+µSILEX application supports out of the box a couple of shortcut to the Symphony http_foundation response classes:
+
+- `$app->json` to output json from php data see Symfony\Component\HttpFoundation\JsonResponse;
+- `$app->stream` to stream a resource, see use Symfony\Component\HttpFoundation\StreamedResponse;
+
 
 ## Testing
 
@@ -64,8 +117,9 @@ Using docker:
 	["hello","world"]
 	$ docker rm -f apache
 
+
 ## Credits
 
-uSILEX is inspired form https://symfony.com/doc/current/components/http_foundation.html
+µSILEX is inspired form https://symfony.com/doc/current/components/http_foundation.html
 and https://github.com/silexphp/Silex
 by Fabien Potencier <fabien@symfony.com>

@@ -12,13 +12,21 @@ Class RouteMatcher implements RouteMatcherInterface
     }
 
     
-    public function match(Route $route) : bool 
+    public function match(Route $route) : array 
     {
         assert( isset($this->app['request']));
         
-        return (
-            ($route->getHttpVerb() == $this->app['request']->getMethod()) &&
-            ($route->getPath() == $this->app['request']->getPathInfo())
-        );
+        $verbRegexp= '#^' . $route->getHttpVerb() . '$#i'; // case insensitive
+        $pathRegexp= '#^' . $route->getPath() . '$#'; // case sensitive
+        
+        
+        // ignore regexp errors...
+        $matches = null;
+        try {
+            preg_match($verbRegexp, $this->app['request']->getMethod()) &&
+            preg_match($pathRegexp, $this->app['request']->getPathInfo(),$matches);
+        } catch (Exception $e) {}
+        
+        return $matches;
     }
 }
