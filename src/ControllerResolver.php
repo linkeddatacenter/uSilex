@@ -20,7 +20,7 @@ Class ControllerResolver implements ControllerResolverInterface
         $this->app = $app;
     }
 
-    public function getController() : string
+    public function getController() : Route
     {
         assert(isset($this->app['request']));
         
@@ -28,7 +28,7 @@ Class ControllerResolver implements ControllerResolverInterface
             if ($matches = $this->app['RouteMatcher']->match($route)) {
                 $this->app['request.matches'] = $matches;
                 $this->app['request.route'] = $route;
-                return $route->getAction();
+                return $route;
             }
         }
         

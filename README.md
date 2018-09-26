@@ -70,7 +70,7 @@ Write your own class that fulfill your needs and register it as a service:
 ...
 $app = new \uSILEX\Application;
 $app['RouteMatcher'] = function ($c) {
-    return new MyVerySpecialRouteMatcher($c);
+    return new MyVerySpecialRouteMatcherImplementation($c);
 };
 ...
 ```

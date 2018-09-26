@@ -51,7 +51,7 @@ class Application extends Container
      * @param \Exception $e a trapped exception
      *
      */
-    protected function exceptionToResponse(\Exception $e): Response
+    protected function exceptionToResponse(\Throwable $e): Response
     {
         if ($e instanceof  HttpExceptionInterface) {
             $response = new Response($e->getMessage(), $e->getStatusCode());            
@@ -92,21 +92,20 @@ class Application extends Container
                 $this->boot();
             }
             
-            
             // execute the controller action
-            $controllerService = $this['ControllerResolver']->getController();
+            $route = $this['ControllerResolver']->getController();
             
-            assert(isset($this[$controllerService]));
+            assert(isset($this[$route->getAction()]));
             
             // call on_route_match hook
             if (isset($this['on_route_match'])) {
                 $this['on_route_match.result'] = $this['on_route_match'];
             }
             
-            $response = $this[$controllerService];
+            $response = $this[$route->getAction()];
               
             
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $response = $this->exceptionToResponse($e);
         }
         

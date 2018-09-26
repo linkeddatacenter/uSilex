@@ -7,5 +7,5 @@ namespace uSILEX;
 
 Interface ControllerResolverInterface
 {
-    public function getController() : string;
+    public function getController() : Route;
 }
