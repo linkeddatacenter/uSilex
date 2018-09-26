@@ -60,7 +60,6 @@ class ApplicationTest extends TestCase
     {
         $app = new Application();
         $app['response'] = new Response('OK');
-        $app['uSILEX_IGNORE_SEND'] = true;
           
         $app['on_response'] = function (Application $a) {
             return new Response( $a['response']->getContent(). ' CONFIRMED');
@@ -68,7 +67,7 @@ class ApplicationTest extends TestCase
         
         $app->run();
         
-        $this->assertEquals('OK CONFIRMED', $app['response']->getContent());
+        $this->expectOutputString('OK CONFIRMED');
     }
     
 

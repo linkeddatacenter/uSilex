@@ -205,10 +205,8 @@ class Application extends Container
             $this['response'] = $this['on_response'];
         }
         
-        // define $this['uSILEX_IGNORE_SEND'] just for unit testing purposes
-        if (!(isset($this['uSILEX_IGNORE_SEND']) && $this['uSILEX_IGNORE_SEND'])) {
-            $this['response']->send();
-        } 
+        
+        $this['response']->send();
         
     }
     

@@ -22,7 +22,7 @@ Class RouteMatcher implements RouteMatcherInterface
         $matches = null;
         try {
             preg_match($verbRegexp, $this->app['request']->getMethod()) &&
-            preg_match($pathRegexp, $this->app['request']->getPathInfo(),$matches);
+            preg_match($pathRegexp, $this->app['request']->getPathInfo(), $matches);
         } catch (Exception $e) { 
             // just ignore regexp errors ...
         }
