@@ -6,7 +6,7 @@ Class RouteMatcher implements RouteMatcherInterface
 {
     protected $app;
     
-    public function __construct( Application $app) 
+    public function __construct(Application $app) 
     {    
         $this->app = $app;
     }
