@@ -103,7 +103,7 @@ class Application extends Container
                 $this['on_route_match.result'] = $this['on_route_match'];
             }
             
-            $response = $response = $this[$controllerService];
+            $response = $this[$controllerService];
               
             
         } catch (Exception $e) {

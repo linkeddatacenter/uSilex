@@ -19,13 +19,11 @@ Class RouteMatcher implements RouteMatcherInterface
         $verbRegexp= '#^' . $route->getHttpVerb() . '$#i'; // case insensitive
         $pathRegexp= '#^' . $route->getPath() . '$#'; // case sensitive
         
-        
-        // ignore regexp errors...
         $matches = null;
         try {
             preg_match($verbRegexp, $this->app['request']->getMethod()) &&
             preg_match($pathRegexp, $this->app['request']->getPathInfo(),$matches);
-        } catch (Exception $e) {}
+        } catch (Exception $e) {// just ignore regexp errors...}
         
         return $matches;
     }
