@@ -1,6 +1,6 @@
 {
     "type": "library",
-    "name": "uSILEX",    
+    "name": "linkeddatacenter/uSilex",    
     "description": "Super lightweight framework based on a subset of SILEX. Great for micro services and JAMstack",
     "keywords": ["LinkedData.Center", "SILEX", "Symfony", "micro services", "JAMstack"],
     "authors": [

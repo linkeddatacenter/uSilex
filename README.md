@@ -1,10 +1,10 @@
-µSILEX
+µSilex
 ======
 [![Build Status](https://travis-ci.org/linkeddatacenter/uSILEX.svg?branch=master)](https://travis-ci.org/linkeddatacenter/uSILEX.svg)
 [![Code Coverage](https://scrutinizer-ci.com/g/linkeddatacenter/uSILEX.svg/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSILEX.svg/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/linkeddatacenter/uSILEX.svg/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSILEX.svg/?branch=master)
 
-µSILEX (aka micro silex)  is a super micro framework based on Pimple and Symfony http_foundation  classes.
+µSilex (aka micro silex)  is a super micro framework based on Pimple and Symfony http_foundation  classes.
 
 Silex was a great project now migrated to Symfony and Flex. This is good when if you need more power and flexibility.  
 But you have to pay a price in terms of complexity and memory footprint.
@@ -100,7 +100,7 @@ $app['response'] contains the the response returned by the executed controller.T
 
 ## Response type
 
-µSILEX application supports out of the box a couple of shortcut to the Symphony http_foundation response classes:
+µSilex application supports out of the box a couple of shortcut to the Symphony http_foundation response classes:
 
 - `$app->json` to output json from php data see Symfony\Component\HttpFoundation\JsonResponse;
 - `$app->stream` to stream a resource, see use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -120,6 +120,6 @@ Using docker:
 
 ## Credits
 
-µSILEX is inspired form https://symfony.com/doc/current/components/http_foundation.html
+µSilex is inspired form https://symfony.com/doc/current/components/http_foundation.html
 and https://github.com/silexphp/Silex
 by Fabien Potencier <fabien@symfony.com>
