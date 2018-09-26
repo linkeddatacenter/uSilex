@@ -1,8 +1,8 @@
 µSilex
 ======
-[![Build Status](https://travis-ci.org/linkeddatacenter/uSilex.svg?branch=master)](https://travis-ci.org/linkeddatacenter/uSILEX.svg)
-[![Code Coverage](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex.svg/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSILEX.svg/?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex.svg/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex.svg/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/badges/build.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/build-status/master)
 
 µSilex (aka micro silex)  is a super micro framework based on Pimple and Symfony http_foundation  classes.
 
