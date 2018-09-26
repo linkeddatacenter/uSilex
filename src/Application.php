@@ -53,7 +53,7 @@ class Application extends Container
      */
     protected function exceptionToResponse( \Exception $e ): Response
     {
-        if ( $exception instanceof  HttpExceptionInterface ) {
+        if ( $e instanceof  HttpExceptionInterface ) {
             $response =  new Response($e->getMessage(), $e->getStatusCode());            
         } else {
             $response = new Response(
@@ -107,7 +107,7 @@ class Application extends Container
               
             
         } catch (Exception $e) {
-            $response = exceptionToResponse($e);
+            $response = $this->exceptionToResponse($e);
         }
         
         return $response;
