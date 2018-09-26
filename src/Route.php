@@ -8,7 +8,7 @@ Class Route
     protected $path;
     protected $action;
     
-    public function __construct( string $verb, string $path, string $action) 
+    public function __construct(string $verb, string $path, string $action) 
     {    
         $this->verb = $verb;
         $this->path = $path;

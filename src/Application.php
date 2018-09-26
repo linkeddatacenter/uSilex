@@ -20,7 +20,7 @@ class Application extends Container
     const VERSION = '1.0.0';
     
     protected $providers = [];
-    protected $routes=[];
+    protected $routes = [];
     protected $booted = false;
 
     /**
@@ -34,12 +34,12 @@ class Application extends Container
         parent::__construct();
         $this['debug'] = false;
         $this['version'] = static::VERSION;
-        $this['error_msg.short_template']= 'Error %s (%s)';
-        $this['error_msg.full_template']= "Error %s (%s) - %s \nTrace info:\n%s\n";
-        $this['RouteMatcher'] = function ($c) {
+        $this['error_msg.short_template'] = 'Error %s (%s)';
+        $this['error_msg.full_template'] = "Error %s (%s) - %s \nTrace info:\n%s\n";
+        $this['RouteMatcher'] = function($c) {
             return new RouteMatcher($c);
         };
-        $this['ControllerResolver'] = function ($c) {
+        $this['ControllerResolver'] = function($c) {
             return new ControllerResolver($c);
         };
     }
@@ -51,15 +51,15 @@ class Application extends Container
      * @param \Exception $e a trapped exception
      *
      */
-    protected function exceptionToResponse( \Exception $e ): Response
+    protected function exceptionToResponse(\Exception $e): Response
     {
-        if ( $e instanceof  HttpExceptionInterface ) {
-            $response =  new Response($e->getMessage(), $e->getStatusCode());            
+        if ($e instanceof  HttpExceptionInterface) {
+            $response = new Response($e->getMessage(), $e->getStatusCode());            
         } else {
             $response = new Response(
                 $this['debug']
-                    ?sprintf( $this['error_msg.full_template'], $e->getCode(), $this['version'], $e->getMessage(), $e->getTraceAsString())
-                    :sprintf( $this['error_msg.short_template'], $e->getCode(), $this['version']),
+                    ?sprintf($this['error_msg.full_template'], $e->getCode(), $this['version'], $e->getMessage(), $e->getTraceAsString())
+                    :sprintf($this['error_msg.short_template'], $e->getCode(), $this['version']),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
@@ -68,7 +68,7 @@ class Application extends Container
     }
     
 
-    public function addRoute( Route $route ): Container
+    public function addRoute(Route $route): Container
     {
         $this->routes[] = $route;
         
@@ -84,8 +84,8 @@ class Application extends Container
     
     public function handleRequest(): Response 
     {
-        assert( isset($this['ControllerResolver']));
-        assert( isset($this['request']));
+        assert(isset($this['ControllerResolver']));
+        assert(isset($this['request']));
         
         try {
             if (!$this->booted) {
@@ -99,7 +99,7 @@ class Application extends Container
             assert(isset($this[$controllerService]));
             
             // call on_route_match hook
-            if( isset($this['on_route_match'])) {
+            if (isset($this['on_route_match'])) {
                 $this['on_route_match.result'] = $this['on_route_match'];
             }
             
@@ -201,12 +201,12 @@ class Application extends Container
         }
         
         // call on_response hook
-        if( isset($this['on_response'])) {
+        if (isset($this['on_response'])) {
             $this['response'] = $this['on_response'];
         }
         
         // define $this['uSILEX_IGNORE_SEND'] just for unit testing purposes
-        if( !( isset($this['uSILEX_IGNORE_SEND']) &&  $this['uSILEX_IGNORE_SEND'])) {
+        if (!(isset($this['uSILEX_IGNORE_SEND']) && $this['uSILEX_IGNORE_SEND'])) {
             $this['response']->send();
         } 
         
