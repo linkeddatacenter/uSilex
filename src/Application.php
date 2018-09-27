@@ -36,8 +36,8 @@ class Application extends Container
         parent::__construct();
         $this['debug'] = false;
         $this['version'] = static::VERSION;
-        $this['error_msg.short_template'] = 'Error %s (%s)';
-        $this['error_msg.full_template'] = "Error %s (%s) - %s \nTrace info:\n%s\n";
+        $this['error_msg.short_template'] = 'Error %s';
+        $this['error_msg.full_template'] = "Error %s - %s \nTrace info:\n%s\n";
         $this['RouteMatcher'] = function($c) {
             return new RouteMatcher($c);
         };
@@ -60,8 +60,8 @@ class Application extends Container
         } else {
             $response = new Response(
                 $this['debug']
-                    ?sprintf($this['error_msg.full_template'], $e->getCode(), $this['version'], $e->getMessage(), $e->getTraceAsString())
-                    :sprintf($this['error_msg.short_template'], $e->getCode(), $this['version']),
+                    ?sprintf($this['error_msg.full_template'], $e->getCode(), $e->getMessage(), $e->getTraceAsString())
+                    :sprintf($this['error_msg.short_template'], $e->getCode()),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
@@ -117,7 +117,7 @@ class Application extends Container
             assert(isset($this[$route->getAction()]));
             
             // call onRouteMatch
-            foreach( $this->onRouteMatchListeners as $serviceName){
+            foreach( $this->onRouteMatchListeners as $serviceName) {
                 $this[$serviceName];
             }
             
@@ -219,7 +219,7 @@ class Application extends Container
         }
         
         // call onResponse hook
-        foreach( $this->onResponseListeners as $serviceName){
+        foreach( $this->onResponseListeners as $serviceName) {
             $this['response'] = $this[$serviceName];
         }
           

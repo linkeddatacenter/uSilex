@@ -33,6 +33,44 @@ class ApplicationTest extends TestCase
     }
     
     
+    public function testHttpError()
+    {
+        
+        $app = new Application();
+        $app['request'] = Request::create('/pippo');
+        
+        $app['my_controller'] = function (Application $a) {
+            throw New HttpException(500, 'controller error');
+        };
+        $testRoute = new Route('GET', '/(pippo)', 'my_controller');
+        $app->addRoute( $testRoute);
+        
+        $response = $app->handleRequest();
+        $this->assertFalse($response->isOk());
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertEquals('controller error', $response->getContent());
+    }
+    
+     
+    public function testPhpError()
+    {
+        
+        $app = new Application();
+        $app['request'] = Request::create('/pippo');
+        
+        $app['my_controller'] = function (Application $a) {
+            throw new Exception();
+        };
+        $testRoute = new Route('GET', '/(pippo)', 'my_controller');
+        $app->addRoute( $testRoute);
+        
+        $response = $app->handleRequest();
+        
+        $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
+        $this->assertContains('Error 0', $response->getContent());
+    }
+    
+    
     public function testOnRouteMatch()
     {
         
