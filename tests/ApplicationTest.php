@@ -33,30 +33,31 @@ class ApplicationTest extends TestCase
     }
     
     
-    public function testOn_route_match()
+    public function testOnRouteMatch()
     {
         
         $app = new Application();
         $app['request'] = Request::create('/pluto');
         
         $app['on_route_match'] = function (Application $a) {
-            $a['request.myparam'] = $a['request.matches'][1];
-            return true;
+            $a['myparam'] = $a['request.matches'][1];
         };
+        
+        $app->onRouteMatch('on_route_match');
         
         $app['my_controller'] = function (Application $a) {
-            return new Response($a['request.myparam']);
+            return new Response($a['myparam']);
         };
         
-        $app->addRoute( new Route('GET', '/(.*)', 'my_controller'));
+        $app->addRoute( new Route('GET', '/plu(.*)', 'my_controller'));
         $response = $app->handleRequest();
 
-        $this->assertEquals('pluto', $response->getContent());
+        $this->assertEquals('to', $response->getContent());
     }
     
     
     
-    public function testOn_response()
+    public function testOnResponse()
     {
         $app = new Application();
         $app['response'] = new Response('OK');
@@ -65,9 +66,32 @@ class ApplicationTest extends TestCase
             return new Response( $a['response']->getContent(). ' CONFIRMED');
         };
         
+        $app->onResponse('on_response');
+        
         $app->run();
         
         $this->expectOutputString('OK CONFIRMED');
+    }
+    
+    
+    public function testMultipleOnResponse()
+    {
+        $app = new Application();
+        $app['response'] = new Response('OK');
+        
+        $app['on_response_1'] = function (Application $a) {
+            return new Response( $a['response']->getContent(). ' CONFIRMED');
+        };
+        $app['on_response_2'] = function (Application $a) {
+            return new Response( $a['response']->getContent(). ' AGAIN');
+        };
+        
+        $app
+            ->onResponse('on_response_1')
+            ->onResponse('on_response_2')
+            ->run();
+        
+        $this->expectOutputString('OK CONFIRMED AGAIN');
     }
     
 

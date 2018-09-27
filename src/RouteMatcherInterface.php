@@ -4,5 +4,5 @@ namespace uSILEX;
 
 interface RouteMatcherInterface
 {
-    public function match(Route $route);
+    public function match(Route $route) : array;
 }

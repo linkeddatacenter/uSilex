@@ -12,7 +12,7 @@ Class RouteMatcher implements RouteMatcherInterface
     }
 
     
-    public function match(Route $route)
+    public function match(Route $route) : array
     {
         assert(isset($this->app['request']));
         

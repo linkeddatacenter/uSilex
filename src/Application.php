@@ -20,6 +20,8 @@ class Application extends Container
     const VERSION = '1.0.0';
     
     protected $providers = [];
+    protected $onRouteMatchListeners = [];
+    protected $onResponseListeners = [];
     protected $routes = [];
     protected $booted = false;
 
@@ -82,6 +84,23 @@ class Application extends Container
     }
     
     
+    public function onRouteMatch(string $serviceName)
+    {
+        $this->onRouteMatchListeners[] = $serviceName;
+        
+        return $this;
+    }
+    
+    
+    
+    public function onResponse(string $serviceName)
+    {
+        $this->onResponseListeners[] = $serviceName;
+        
+        return $this;
+    }
+    
+    
     public function handleRequest(): Response 
     {
         assert(isset($this['ControllerResolver']));
@@ -97,9 +116,9 @@ class Application extends Container
             
             assert(isset($this[$route->getAction()]));
             
-            // call on_route_match hook
-            if (isset($this['on_route_match'])) {
-                $this['on_route_match.result'] = $this['on_route_match'];
+            // call onRouteMatch
+            foreach( $this->onRouteMatchListeners as $serviceName){
+                $this[$serviceName];
             }
             
             $response = $this[$route->getAction()];
@@ -199,12 +218,11 @@ class Application extends Container
             $this['response'] = $this->handleRequest();
         }
         
-        // call on_response hook
-        if (isset($this['on_response'])) {
-            $this['response'] = $this['on_response'];
+        // call onResponse hook
+        foreach( $this->onResponseListeners as $serviceName){
+            $this['response'] = $this[$serviceName];
         }
-        
-        
+          
         $this['response']->send();
         
     }
