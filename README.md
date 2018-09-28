@@ -20,7 +20,7 @@ Silex was a great project that now migrated to Symfony + Flex. This is good when
 
 As a matter of fact, in the JAMStack, Docker and XaaS era, you can let lot of conventional framework features to other components in the system application architecture (i.e. caching, authentication, security, monitoring, etc. etc). 
 
-Beside this, there are tons of libraris that implement great reusable middleware that are fully compatible with µSilex (e.g. [MW library](https://github.com/middlewares/psr15-middlewares)) and lot of great PSR implementations that fits µSilex requirements.
+Beside this, there are tons of libraris that implement great reusable middleware that are fully compatible with µSilex (e.g. [MW library](https://github.com/middlewares/psr15-middlewares)) and lot of great PSR implementations that fit µSilex requirements.
 
 
 Have a nice day!
