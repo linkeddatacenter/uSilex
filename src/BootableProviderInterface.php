@@ -1,11 +1,4 @@
 <?php
-
-/*
- * This file was part of the Silex framework.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- */
-
 namespace uSILEX;
 
 /**

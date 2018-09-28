@@ -3,125 +3,110 @@ namespace uSILEX\Tests;
 
 use PHPUnit\Framework\TestCase;
 use uSILEX\Application;
-use uSILEX\Route;
-use uSILEX\Exception\HttpException;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use uSILEX\BootableProviderInterface;
+use Pimple\Container;
+use Pimple\ServiceProviderInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 
 class ApplicationTest extends TestCase
 {
-
-    public function testGetRequest()
+    
+    public function testHandle()
     {
-
         $app = new Application();
-        $app['request'] = Request::create('/pippo');
         
-        $app['my_controller'] = function (Application $a) {
-            return new Response('ok');
-        };
-        $testRoute = new Route('GET', '/(pippo)', 'my_controller');
-        $app->addRoute( $testRoute);
+        $request = $this->createMock('\\Psr\\Http\\Message\\ServerRequestInterface');
         
-        $response = $app->handleRequest();
+        $app['a_response'] = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');        
+        $middleware1 = $this->createMock('\\Psr\\Http\\Server\\MiddlewareInterface');
+        $middleware1->method('process')->willReturn($app['a_response']);
         
-        $this->assertEquals($testRoute, $app['request.route']);
-        $this->assertCount(2, $app['request.matches']);
-        $this->assertEquals('pippo', $app['request.matches'][1]);
-        $this->assertEquals('ok', $response->getContent());
+        $app['middlewareService'] = function ($app) use($middleware1){ return $middleware1;};
+        $app->registerAsMiddleware('middlewareService');
+        
+        $actualResponse = $app->handle($request);
+        
+        $this->assertEquals($app['a_response'], $actualResponse);
+    }
+
+    public function testRegister()
+    {
+        $app = new Application();
+        
+        $provider1 = $this->createMock('\\Pimple\\ServiceProviderInterface');
+        $provider2 = $this->createMock('\\Pimple\\ServiceProviderInterface');
+        
+        $app->register($provider1);
+        $app->register($provider2);
+        
+        $this->assertEquals([$provider1, $provider2],$app->getProviders());
+        
     }
     
     
-    public function testHttpError()
+    public function testBoot()
     {
-        
         $app = new Application();
-        $app['request'] = Request::create('/pippo');
         
-        $app['my_controller'] = function (Application $a) {
-            throw New HttpException(500, 'controller error');
+        $provider = new class implements ServiceProviderInterface, BootableProviderInterface {
+            public function register(Container $app){}
+            public function boot(Application $app){ $app['bootme']=true;}
         };
-        $testRoute = new Route('GET', '/(pippo)', 'my_controller');
-        $app->addRoute( $testRoute);
         
-        $response = $app->handleRequest();
-        $this->assertFalse($response->isOk());
-        $this->assertEquals(500, $response->getStatusCode());
-        $this->assertEquals('controller error', $response->getContent());
+        $app->register($provider);
+        $app->boot();
+        
+        $this->assertTrue($app['bootme']);
+        
     }
-    
      
-    public function testPhpError()
-    {
-        
-        $app = new Application();
-        $app['request'] = Request::create('/pippo');
-        
-        $app['my_controller'] = function (Application $a) {
-            throw new Exception();
-        };
-        $testRoute = new Route('GET', '/(pippo)', 'my_controller');
-        $app->addRoute( $testRoute);
-        
-        $response = $app->handleRequest();
-        
-        $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
-        $this->assertContains('Error 0', $response->getContent());
-    }
-    
-    
-    public function testOnRouteMatch()
-    {
-        
-        $app = new Application();
-        $app['request'] = Request::create('/pluto');
-        
-        $app['on_route_match'] = function (Application $a) {
-            $a['myparam'] = $a['request.matches'][1];
-        };
-        
-        $app->onRouteMatch('on_route_match');
-        
-        $app['my_controller'] = function (Application $a) {
-            return new Response($a['myparam']);
-        };
-        
-        $app->addRoute( new Route('GET', '/plu(.*)', 'my_controller'));
-        $response = $app->handleRequest();
-
-        $this->assertEquals('to', $response->getContent());
-    }
-    
     
     
     public function testOnResponse()
     {
         $app = new Application();
-        $app['response'] = new Response('OK');
+        
+        $app['request'] = $this->createMock('\\Psr\\Http\\Message\\ServerRequestInterface');
+        
+        $app['response'] = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');        
+        $app['responseChanged'] = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
+                
+        $app->registerAsMiddleware('dummy');
           
         $app['on_response'] = function (Application $a) {
-            return new Response( $a['response']->getContent(). ' CONFIRMED');
+            return $a['responseChanged'];
         };
         
         $app->onResponse('on_response');
-        
+
         $app->run();
         
-        $this->expectOutputString('OK CONFIRMED');
+        $this->assertEquals($app['responseChanged'],$app['response']);
     }
     
     
     public function testMultipleOnResponse()
     {
         $app = new Application();
-        $app['response'] = new Response('OK');
+        
+        $app['request'] = $this->createMock('\\Psr\\Http\\Message\\ServerRequestInterface');
+        
+        $app['response'] = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
+        $app['responseBis'] = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
+        $app['responseTer'] = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
+        
+        $app->registerAsMiddleware('dummy');
         
         $app['on_response_1'] = function (Application $a) {
-            return new Response( $a['response']->getContent(). ' CONFIRMED');
+            return $a['responseBis'];
         };
+        
         $app['on_response_2'] = function (Application $a) {
-            return new Response( $a['response']->getContent(). ' AGAIN');
+            assert( $a['response'] = $a['responseBis']);
+            return $a['responseTer'];
         };
         
         $app
@@ -129,27 +114,8 @@ class ApplicationTest extends TestCase
             ->onResponse('on_response_2')
             ->run();
         
-        $this->expectOutputString('OK CONFIRMED AGAIN');
+        $this->assertEquals($app['responseTer'],$app['response']);
     }
-    
-
-    public function testGetRoutesWithNoRoutes()
-    {
-        $app = new Application();
-
-        $routes = $app->getRoutes();
-        $this->assertCount(0, $routes);
-    }
-
-    public function testGetRoutesWithRoutes()
-    {
-        $app = new Application();
-
-        $app->addRoute( new Route('GET', '/', 'pippo'));
-        $app->addRoute( new Route('POST', '/','pippo'));
-            
-        $routes = $app->getRoutes();
-        $this->assertCount(2, $routes);
-    }
+ 
 
 }

@@ -7,17 +7,21 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/badges/build.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/build-status/master)
 
-µSilex (aka micro silex)  is a super micro framework inspired on Pimple and Symfony http_foundation  classes.
+µSilex (aka micro silex) is a super micro framework inspired on Pimple and PSR standard.
+
+This project is a try to build a standard conceptual framework for developing micro-services and
+APIs endpoints that require maximum performances with a minimum of memory footprint.
+
 
 Silex was a great project that now migrated to Symfony + Flex. This is good when if you need more power and flexibility. But you have to pay a price in terms of complexity and memory footprint.
 
-µSilex covers a small subset of the original Silex projecy: no caching, no security, no authentication, limited middleware,  limited view support, no template, etc, etc. 
+µSilex covers a small subset of the original Silex projecy: a µSilex is just a Pimple container that implements [PSR-15 specifications](https://www.php-fig.org/psr/psr-15/). That's it. 
 
-As a matter of fact, in the JAMStack, Docker and XaaS era, you can let all these features to other components in the system application architecture.
 
-This project is a try to build a framework for developing APIs endpoints 
-that require maximum performances
-with a minimum of memory footprint (e.g. micro services, smart proxies, gateway, adaptors, etc, etc).
+As a matter of fact, in the JAMStack, Docker and XaaS era, you can let lot of conventional framework features to other components in the system application architecture (i.e. caching, authentication, security, monitoring, etc. etc). 
+
+Beside this, there are tons of library that implements great reusable middleware that are full compatible with µSilex (e.g. [MW library](https://github.com/middlewares/psr15-middlewares)) and lot of great PSR implementation that fits µSilex requirements. Why to reinvent the well?
+
 
 Have a nice day!
 
@@ -25,99 +29,78 @@ Have a nice day!
 
 `compose require linkeddatacenter/usilex`
 
-## Usage:
+## Usage
+
+To run µSilex *Application* you require to register at least a Pimple service that instantiates  a *Middleware* object. The object must implement Psr\Http\Server\MiddlewareInterface. 
+
+All registered middleware services must be explicitly register with the Application method *registerAsMiddleware*. 
+
+Runtime, all Middleware services will be executed in the registration order.
+
+This example use the zend Diactoros PSR-7 concrete implementation:
 
 ```
-<?php
-namespace uSILEX;
 require_once __DIR__.'/../vendor/autoload.php';
+
+use uSILEX\Application;
+use Zend\Diactoros\ServerRequestFactory;
+use Zend\Diactoros\Response\TextResponse;
+
 $app = new Application;
-$app->addRoute(new Route('GET', '/', 'say_hello'));
-$app['say_hello']= function (Application $app) {
-   return $app->json(['hello', 'world']);
-};
+$app['request'] = ServerRequestFactory::fromGlobals();
+$app['responseEmitter'] = 'print_r';
+$app['hello-world'] = new TextResponse('Hello world!');
+$app->registerAsMiddleware('hello-world');
+
 $app->run();
 ```
 
-A uSILEX\Application is just a Pimple\Container with few extra features (like in the good old Silex package).
 
-## Routing
+µSilex Application provides an helper function *run* that realize a typical http server application workflow:
 
-The default routing policy of µSILEX does not support uri templates, it relies on regexp.
+1. create a request from server variable
+2. call the handler to execute all registered middleware ( usually you will define at least an error handler and a router)
+3. do some post processing to the handle response
+3. send the response to client (emit)
 
-The first argument of a route matches the http verb (case insensitive). 
-The second argument matches the request path
-The last argument is a service name that must be defined runtime.
+Before to call the *run* method you must register following Pimple services:
 
-You do not have to use delimeter and qualifier in Route: we use hash (#) for you;  '^' is inserted at the beginning of regexp and 
-'$' is always inserted at the end. 
-This means that the hash character (#) need to be escaped.
+- *request*  that instantiates an object implementing PSR-7 ServerRequestInterface 
+- *responseEmitter*  that instantiates an object that implements the emit($response) method.  
 
-For example in `New Route('GET|POST', '/id/([0-9]+)', 'my_controller' )` the first argument is evaluated as the regexp `#^GET|POST$#i` and the second argument as `#^/id/([0-9]+)$#` . In the controller service you can access regexp capturing group in $app['request.matches'] variable and the matched route in $app['request.route'].
-
-Note that $app['request.matches'][0] always matches the whole route path,  
-$app['request.matches'][1] is the first group (if any, etc etc.).
+After calling the request  handler (i.e. executing middlewares), the resulting response will be stored into  $app['response']. The *run* method will finally execute in sequence all Pimple service you registered with the method *onResponse*.
+This is an unique opportunity to change the response before it is sent back to the http client using your response emitter.
 
 
-In controllers, *$app['request.route']* contains the matched route and  *$app['request.matches']* contains the  regular expression  matches results on the route path (i.e. internally something similar to `preg_match($this->app['request.route']->getPath(),$this->app['request']->getPathInfo(),$this->app['request.matches'])` is used) and . For example:
-
-	$app->addRoute(new Route('GET', '/id/([0-9]+)', 'my_controller'));	
-	$app['my_controller'] = function (Application $a) {
-		$pfirst = $a['request.matches][1];
-		return new Response( "$method $p1 id");
-	}
+See more in the [examples](examples/README.md) dir.
 
 
-## Customize routing
-
-The routing capability depends mainly from the *$app['RouteMatcher']* service. 
-You can also redefine the *$app['ControllerResolver']* service to change all the routing strategy.
-
-Write your own classess that fulfill your needs and register them as a service before running the application.
-
-
-## middleware
-
-The middleware management capability is limited to a couple listener:
-
-	$app->onRouteMatch( 'service-name' );
-
-The 'service-name'service will be called when a request  matches a  route. If the default ControllerResolver implementation is used, then, inside hooked service you can access 
-$app['request.matches'] and $app['request.route'].
-
-	$app->onResponse( 'service-name' );
-
-The 'service-name' service is called after a successful  controller execution an must return a valid
-Response object.
-  
-$app['response'] contains the the response returned by the executed controller and will be overidden
-by onResponse Hook.
-This is an unique opportunity to change the response before it is sent back to the http client.
-
-You can hook multiple services to `onRouteMatch` and to `onResponse`. They will be executed in the registration order.
-
-## Response type
-
-µSilex application supports out of the box a couple of shortcut to the Symphony http_foundation response classes:
-
-- `$app->json` to output json from php data see Symfony\Component\HttpFoundation\JsonResponse;
-- `$app->stream` to stream a resource, see use Symfony\Component\HttpFoundation\StreamedResponse;
-
-
-## Testing
+## Testing and examples
 
 Using docker:
 
-	$ docker run --rm -ti -v $PWD/.:/app composer install
-	$ docker run --rm -ti -v $PWD/.:/app composer vendor/bin/phpunit
-	$ docker run -d --name apache -v $PWD/.:/var/www/html php:apache
-	$ docker exec -t apache curl http://localhost/examples/
-	["hello","world"]
+	$ docker run --rm -ti -v $PWD/.:/app composer bash
+	$ composer install
+	$ vendor/bin/phpunit
+	$ cd examples
+	$ composer install
+	$ exit
+	$ docker run -d -p 8000:80 --name apache -v $PWD/.:/var/www/html php:apache
+
+Point your browser to
+
+- http://localhost:8000/examples/simple/
+- http://localhost:8000/examples/aura_routing/index.php/hello/world
+
+Destroy the container:
+
 	$ docker rm -f apache
 
 
 ## Credits
 
-µSilex is inspired form https://symfony.com/doc/current/components/http_foundation.html
-and https://github.com/silexphp/Silex
-by Fabien Potencier <fabien@symfony.com>
+µSilex is inspired form:
+
+- All PSR standards
+- https://github.com/pimple/pimple and https://github.com/silexphp/Silex projects by Fabien Potencier
+- https://github.com/relayphp/Relay.Relay project
