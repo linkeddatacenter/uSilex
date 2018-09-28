@@ -11,27 +11,12 @@ use TypeError;
 
 class Application extends Container implements RequestHandlerInterface
 {    
-    const VERSION = '1.0.0';
-    
     protected $providers = [];
     protected $middlewares = [];
     protected $onResponseListeners = [];
     protected $booted = false;
 
-    /**
-     * Instantiate a new Application.
-     *
-     * Objects and parameters can be passed as argument to the constructor.
-     *
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this['debug'] = false;
-        $this['version'] = static::VERSION;
-    }
-    
-    
+        
     public function getMiddlewares() : array
     {
         return $this->middlewares;
