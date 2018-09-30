@@ -85,26 +85,22 @@ This example uses the [Relay](http://relayphp.com/2.x) library for PSR-15 http h
 See more in the [examples](examples/README.md) dir.
 
 
-## Testing and running examples
+## Testing 
 
 Using docker:
 
 	$ docker run --rm -ti -v $PWD/.:/app composer bash
 	$ composer install
 	$ vendor/bin/phpunit
-	$ cd examples
-	$ composer install
 	$ exit
-	$ docker run -d -p 8000:80 --name apache -v $PWD/.:/var/www/html php:apachee
+	$ docker run --rm -p 8000:80 --name apache -v $PWD/.:/var/www/html php:apache
 
 Point your browser to:
 
 - http://localhost:8000/examples/simple/
 - http://localhost:8000/examples/routing/index.php/hello/world
 
-Destroy the container:
-
-	$ docker rm -f apache
+Destroy the container pressing ctrl-c
 
 ## Credits
 

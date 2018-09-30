@@ -51,7 +51,7 @@ class Application extends Container
     public function boot() : self
     {
         if ($this->booted) {
-            return this;
+            return $this;
         }
         
         $this->booted = true;
