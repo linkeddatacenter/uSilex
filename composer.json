@@ -15,11 +15,12 @@
         "pimple/pimple": "^3.2",
         "psr/http-message": "~1.0",
         "psr/http-server-handler": "~1.0",
-        "psr/http-server-middleware": "~1.0"
+        "psr/http-server-middleware": "~1.0",
+        "psr/container": "^1.0"
     },
     "autoload": {
         "psr-4": {
-            "uSILEX\\": "src/"
+            "uSilex\\": "src/"
         }
     },
     "require-dev": {

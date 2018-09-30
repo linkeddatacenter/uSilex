@@ -6,7 +6,7 @@ include "AuraRoutingServiceProvider.php";
 include "DiactorosServiceProvider.php";
 include "ErrorHandlingServiceProvider.php";
 
-use uSILEX\Application;
+use uSilex\Application;
 use EXAMPLE\AuraRoutingExampleServiceProvider;
 use Zend\Diactoros\Response\TextResponse;
 

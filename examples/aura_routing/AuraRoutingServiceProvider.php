@@ -13,7 +13,7 @@ class AuraRoutingServiceProvider implements ServiceProviderInterface
 
     public function register(Container $app)
     {  
-        // change ththi if the endpoint is not on the root
+        // change this default if the endpoint is not on the http document root
         $app['basepath'] = '/';
          
         $app['routeMap'] = function($app){

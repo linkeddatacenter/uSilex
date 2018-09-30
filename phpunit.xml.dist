@@ -13,7 +13,7 @@
 
     <testsuites>
         <testsuite name="uSILEX unit test suite">
-            <directory>tests/</directory>
+            <directory>tests/unit/</directory>
         </testsuite>
     </testsuites>
     

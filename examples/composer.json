@@ -8,11 +8,12 @@
         "middlewares/utils": "^2.1",
         "middlewares/error-handler": "^1.2",
         "middlewares/aura-router": "^1.1",
-        "middlewares/request-handler": "^1.3"
+        "middlewares/request-handler": "^1.3",
+        "psr/container": "^1.0"
     },
     "autoload": {
         "psr-4": {
-            "uSILEX\\": "../src/",
+            "uSilex\\": "../src/",
             "EXAMPLE\\": "src/"
         }
     }

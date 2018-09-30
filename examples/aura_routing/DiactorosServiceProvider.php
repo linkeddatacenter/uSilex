@@ -22,9 +22,9 @@ class DiactorosServiceProvider implements ServiceProviderInterface
             return new SapiEmitter;
         };
    
-        $app['responseEmitter'] = function($app) {
-            return [$app['sapiEmitter'],'emit'];
-        };
+        $app['responseEmitter'] = $app->protect(function($response) {
+            echo $app['sapiEmitter']->emit($response);
+        });
    
     }
 
