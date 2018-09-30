@@ -31,7 +31,6 @@ trait BootManagerTrait
      * @param ServiceProviderInterface $provider A ServiceProviderInterface instance
      * @param array                    $values   An array of values that customizes the provider
      *
-     * @return Application
      */
     public function register(ServiceProviderInterface $provider, array $values = []) 
     {

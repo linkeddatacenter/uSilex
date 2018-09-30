@@ -46,8 +46,6 @@ class Application extends HttpKernel
         
         if( isset($this['responseEmitter']) && is_callable($this['responseEmitter'])) {
             call_user_func($this['responseEmitter'],$response);
-        } else {
-            var_dump($response);
         }
         
         return true;

@@ -26,7 +26,6 @@ Beside this, there are tons of libraries that implement great reusable middlewar
 
 Basically µSilex it is composed by a set of traits that implements specific interfaces and two wrapper classes:
 
-- **BootableContainer**: a Pimple container .
 - **HttpKernel**: a Pimple container that implements PDR-15 specifications (i.e. HTTP Handlers with middleware capability) with response post-processing capability.
 - **Application**: that is an httpKernel with support to bootable service providers + the method *run*. More or less this class  is a Silex\Application subset that do not support routing and silex middleware (we use PSR-15 middleware).
 
@@ -76,9 +75,7 @@ This example uses the zend Diactoros PSR-7 concrete implementation:
 	        }
 	    };
 	};
-
-
-$app->run('say_hello');
+	$app->run('say_hello');
 
 
 The µSilex Application helper function *run* that realizes a typical http server application workflow:
@@ -91,7 +88,7 @@ The µSilex Application helper function *run* that realizes a typical http serve
 Before to call the *run* method you must register following Pimple services:
 - *request*  that instantiates an object implementing PSR-7 ServerRequestInterface
 - *responseEmitter*  that instantiates an object that write on STDOUT a response. 
-If not provided, the run implementation just render the response with var_dump. 
+If not provided, the output is disabled. 
 
 An Application instance must register at least a middleware component that produces a response.
 
@@ -100,7 +97,6 @@ This is an unique opportunity to change the response before it is sent back to t
 
 See more in the [examples](examples/README.md) dir.
 
-Before to call handler, you need to call
 
 ## Testing and examples
 
