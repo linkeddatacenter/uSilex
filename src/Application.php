@@ -11,44 +11,92 @@
 
 namespace uSilex;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use InvalidArgumentException;
+use Pimple\Container;
+use Pimple\ServiceProviderInterface;
+use Exception;
 
-
-class Application extends HttpKernel
+/**
+ * The uSilex framework class.
+*/
+class Application extends Container
 {
-    use \uSilex\Pimple\BootManagerTrait;
+    
+    protected $providers = [];
+    protected $booted = false;
+    
+    
+    /**
+     * Redefine Registers a service provider.
+     *
+     * @param ServiceProviderInterface $provider A ServiceProviderInterface instance
+     * @param array                    $values   An array of values that customizes the provider
+     *
+     */
+    public function register(ServiceProviderInterface $provider, array $values = []) : self
+    {
+        $this->providers[] = $provider;
+        
+        parent::register($provider, $values);
+        
+        return $this;
+    }
+    
+    
+    /**
+     * Boots all service providers.
+     *
+     * This method is automatically called by handle(), but you can use it
+     * to boot all service providers when not handling a request.
+     */
+    public function boot() : self
+    {
+        if ($this->booted) {
+            return this;
+        }
+        
+        $this->booted = true;
+        
+        foreach ($this->providers as $provider) {
+            if ( ($provider instanceof ServiceProviderInterface) && method_exists($provider,'boot') ) {
+                $provider->boot($this);
+            }
+        }
+        
+        return $this;
+    }
+ 
     
     /**
      * Handles the request and delivers the response.
      *
      */
-    public function run(string $middlewareServiceName = null) : bool
+    public function run() : bool
     {
-        
-        if( !isset($this['request']) ) {
-            throw new InvalidArgumentException('request service must be defined');
-        }
-        $request = $this['request'];
-        
-        if( !($request instanceof ServerRequestInterface) ) {
-            throw new InvalidArgumentException('request is not an http server request');
+        try {
+            if( !isset($this['response.emit'])){
+                $this['response.emit'] =  $this->protect( function(){} );
+            }
+            
+            $this->boot();
+            $response = $this['kernel']->handle($this['request']);
+           
+            call_user_func($this['response.emit'],$response);
+            
+            $result = true;
+        } catch (Exception $e) {
+            $result = false;
+            if( isset($this['uSilex.errorManagement']) && !$this['uSilex.errorManagement']) {
+                throw $e;
+            } elseif (isset($this['uSilex.errorManagement'])) {
+                call_user_func($this['uSilex.errorManagement'],$e);
+            } else {
+                header('X-PHP-Response-Code: '. $e->getCode(), true, 500);
+                echo "Internal error. " . $e->getMessage();
+                $this['uSilex.panic.error'] =  $e;
+            }
         }
           
-        // auto service registration
-        if( $middlewareServiceName ) {
-            $this->registerAsMiddleware($middlewareServiceName);
-        }
-     
-        $response = $this->boot()->handle($request);
-        $response = $this->handleResponse($response);
-        
-        if( isset($this['responseEmitter']) && is_callable($this['responseEmitter'])) {
-            call_user_func($this['responseEmitter'],$response);
-        }
-        
-        return true;
+        return $result;
     }
     
 }

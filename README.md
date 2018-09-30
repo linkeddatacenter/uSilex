@@ -7,45 +7,55 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/badges/build.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/build-status/master)
 
-µSilex (aka micro silex) is a super micro framework inspired on Pimple and PSR standards.
+µSilex (aka micro silex) is a micro framework inspired by Pimple and PSR standards. All can you with less tha 100 lines of code!
 
 This project is a try to build a standard conceptual framework for developing micro-services and
 APIs endpoints that require maximum performances with a minimum of memory footprint.
 
 Why [Pimple](https://pimple.symfony.com/)? Because it is lazy, consistent, elegant, small (about 80 lines of code). What else? 
 
-Why [PSR standards](https://www.php-fig.org/psr)? Because it is a successful community effort rhat produced many good implementations.
+Why [PSR standards](https://www.php-fig.org/psr)? Because it is a successful community project with a lot of good implementations.
 
-Why µSilex? Silex was a great framework  that now abandoned because it moved to Symfony + Flex. This is good when you need more power and flexibility. But you have to pay a price in terms of complexity and memory footprint.
+Why µSilex? Silex was a great framework now abandoned in favour of Symfony + Flex. This is good when you need more power and flexibility. But you have to pay a price in terms of complexity and memory footprint. 
 
-µSilex covers a small subset of the original Silex project: a µSilex is just a Pimple container that implements modular [PSR specifications](https://www.php-fig.org/psr). That's it. µSilex inflates Pimple with just from 20 to 100 extra lines of code (dependings from your needs)!
+µSilex it is a new project that covers a small subset of the original Silex project: a µSilex is just a Pimple container enabling the reuse of implementations that follow [PSR specifications](https://www.php-fig.org/psr). That's it. µSilex inflates Pimple with just about 30 lines of code!
 
-As a matter of fact, in the JAMStack, Docker and XaaS era, you can let lot of conventional framework features to other components in the system application architecture (i.e. caching, authentication, security, monitoring, etc. etc). 
+As a matter of fact, in the JAMStack, Docker and XaaS era, you can let lot of conventional framework features to other components in the system application architecture (i.e. caching, authentication, security, monitoring, etc. etc).
 
-Beside this, there are tons of libraries that implement great reusable middleware that are fully compatible with µSilex. For example see [MW library](https://github.com/middlewares/psr15-middlewares)) and lot of great PSR-7 implementations that match µSilex requirements. µSilex is also compatible with lot of Silex Service Providers and with some Silex Application traits.
+Is µSilex a replacement of Silex? No, but it could be used to build one.
 
-Basically µSilex it is composed by a set of traits that implements specific interfaces and two wrapper classes:
-
-- **HttpKernel**: a Pimple container that implements PDR-15 specifications (i.e. HTTP Handlers with middleware capability) with response post-processing capability.
-- **Application**: that is an httpKernel with support to bootable service providers + the method *run*. More or less this class  is a Silex\Application subset that do not support routing and silex middleware (we use PSR-15 middleware).
-
-You can create your framework just composing the available Kernel traits and middlewares. Probably you could create a full Silex compatible framework just implementing the missing components (routing, Symphony Events, etc. etc.) 
-
-Ask not why nobody is doing the full compatibility with Silex. You are the "nobody"!
+Ask not why nobody is doing this. You are the "nobody"!
 
 Have a nice day!
+
 
 ## Install
 
 `compose require linkeddatacenter/usilex`
 
+
 ## Usage
 
-To run µSilex *Application* you require to register at least a Pimple service that instantiates  a *Middleware* object. The object must implement Psr\Http\Server\MiddlewareInterface.
-All registered middleware services must be explicitly register with the method *registerAsMiddleware*.
-Middlewre management capability is realized by \uSilex\Kernel\Psr1 trait. 
+Basically a µSilex provides the class **Application** that is a Pimple container with few extra features.
 
-This example uses the zend Diactoros PSR-7 concrete implementation:
+µSilex is not bound to any specific other specific implementation (apart from Pimple);
+instead µSilex relay to PSR specifications. In particular µSilex uses PSR-7 specifications for http messages, PSR-15 for managing http handles and middleware and PSR-11 for containers. 
+ 
+For this reason, you need to configure some entries:
+
+- **$app['request']**: should contain the server http request
+- **$app['response.emit']**: an optional function that echoes the http response provided as parameter. If not provided, no output is sent back.
+- **$app['kernel']**: a service that instantiate an implementation of PSR-15 http handler
+
+µSilex Application provides the *run* method that calls the kernel request handler.
+
+The run method is protected by a basic error handler from PHP errors. If something goes wrong, it emits a http 500 state; the option *uSilex.panic.error* contains the trapped php exception. You can disable the embedded error management defining the option ['uSilex.errorManagement'] = false. In this case you have to catch exceptions. You can also define your custom errorManagement defining a function that accept a PHP Exception and assigning it to 'uSilex.errorManagement' option.
+
+There are tons of libraries that implement great reusable middleware that are fully compatible with µSilex. For example see [MW library](https://github.com/middlewares/psr15-middlewares)) and lot of great PSR-7 implementations that match µSilex requirements. µSilex is also compatible with lot of Silex Service Providers and with some Silex Application traits.
+
+You can create your custom framework just selecting the the components that fit your needs. 
+
+This example uses the [Relay](http://relayphp.com/2.x) library for PSR-15 http handle provider and [Diactoros](https://docs.zendframework.com/zend-diactoros/) for PSR-7 http messages.
 
 	<?php
 	require_once __DIR__.'/../vendor/autoload.php';
@@ -54,53 +64,30 @@ This example uses the zend Diactoros PSR-7 concrete implementation:
 	use Psr\Http\Message\ServerRequestInterface;
 	use Psr\Http\Server\RequestHandlerInterface;
 	use Psr\Http\Server\MiddlewareInterface;
-	use Zend\Diactoros\ServerRequestFactory;
-	use Zend\Diactoros\Response\TextResponse;
+	
+	class MyRequestProcessor implements MiddlewareInterface {
+	    use \uSilex\Psr11Trait;
+	    
+	    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+	    {
+	        return new \Zend\Diactoros\Response\TextResponse( $this->get('message'));
+	    }
+	}  
 	
 	$app = new Application;
-	
-	$app['request'] = function() {
-	    return ServerRequestFactory::fromGlobals();
-	};
-	$app['responseEmitter'] = $app->protect( function($response) {
-	    echo $response->getBody();
-	});
-	
+	$app['request'] = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
+	$app['response.emit'] = $app->protect( function($response) {echo $response->getBody();});
 	$app['message'] = 'hello world!';
-	$app['say_hello'] = function( Application $app) {
-	    return new class($app) implements MiddlewareInterface {
-	        use \uSilex\Psr11Trait;
-	        public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-	            return new TextResponse( $this->get('message'));
-	        }
-	    };
-	};
-	$app->run('say_hello');
+	$app['kernel'] = new \Relay\Relay([ new MyRequestProcessor($app)]);
+	$app->run();
 
-
-The µSilex Application helper function *run* that realizes a typical http server application workflow:
-
-1. creates a request from server variables
-2. calls the handler to execute all registered middleware ( usually you will define at least an error handler and a router
-3. post processes to the handler response (if needed)
-4. sends the response to client (emit))
-
-Before to call the *run* method you must register following Pimple services:
-- *request*  that instantiates an object implementing PSR-7 ServerRequestInterface
-- *responseEmitter*  that instantiates an object that write on STDOUT a response. 
-If not provided, the output is disabled. 
-
-An Application instance must register at least a middleware component that produces a response.
-
-After calling the request  handler (i.e. executing middlewares). The *run* method will execute in all response processor services you registered with the method *onResponse*.
-This is an unique opportunity to change the response before it is sent back to the http client through the configured emitter service.
 
 See more in the [examples](examples/README.md) dir.
 
 
-## Testing and examples
+## Testing and running examples
 
-Using docker
+Using docker:
 
 	$ docker run --rm -ti -v $PWD/.:/app composer bash
 	$ composer install
@@ -112,8 +99,8 @@ Using docker
 
 Point your browser to:
 
-- http://localhost:8000/examples/simple
-- http://localhost:8000/examples/aura_routing/index.php/hello/world
+- http://localhost:8000/examples/simple/
+- http://localhost:8000/examples/routing/index.php/hello/world
 
 Destroy the container:
 
@@ -125,5 +112,4 @@ Destroy the container:
 
 - https://github.com/php-fig/fig-standards/
 - https://github.com/pimple/pimple and https://github.com/silexphp/Silex projects by Fabien Potencier
-- https://github.com/relayphp/Relay.Relay projectt
-- https://github.com/relayphp/Relay.Relay
+- https://github.com/relayphp/Relay.Relay project

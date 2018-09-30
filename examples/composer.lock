@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2dba7e324d79bd2dd2abb4da9e15e985",
+    "content-hash": "8df58a8202cc3e4196d88628a88d4103",
     "packages": [
         {
             "name": "aura/router",
@@ -611,6 +611,54 @@
             "time": "2016-10-10T12:19:37+00:00"
         },
         {
+            "name": "relay/relay",
+            "version": "2.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/relayphp/Relay.Relay.git",
+                "reference": "da12328890800cd12107bc95a775e61993fb438f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/relayphp/Relay.Relay/zipball/da12328890800cd12107bc95a775e61993fb438f",
+                "reference": "da12328890800cd12107bc95a775e61993fb438f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1",
+                "psr/http-message": "~1.0",
+                "psr/http-server-handler": "~1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~7.0",
+                "psr/http-server-middleware": "~1.0",
+                "zendframework/zend-diactoros": "~1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Relay\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Relay.Relay Contributors",
+                    "homepage": "https://github.com/relayphp/Relay.Relay/contributors"
+                }
+            ],
+            "description": "A PSR-7 middleware dispatcher.",
+            "homepage": "https://github.com/relayphp/Relay.Relay",
+            "keywords": [
+                "middleware",
+                "psr-7"
+            ],
+            "time": "2018-02-13T21:34:17+00:00"
+        },
+        {
             "name": "zendframework/zend-diactoros",
             "version": "1.8.6",
             "source": {
@@ -732,7 +780,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "relay/relay": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

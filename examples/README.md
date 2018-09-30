@@ -1,7 +1,7 @@
-µSilex example application
-===========================
+µSilex examples
+===============
 
 Following examples provided:
 
 - **simple** is a minimal implementation (no routing)
-- **aura_routing** implements a full flagged error management with aura routing using zend Diactoros PSR-7- implementation
+- **routing** implements a full flagged error management with aura routing and zend Diactoros PSR-7- implementation

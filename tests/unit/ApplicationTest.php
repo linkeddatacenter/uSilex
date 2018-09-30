@@ -2,95 +2,78 @@
 namespace uSilex\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Pimple\Container;
+use Pimple\ServiceProviderInterface;
 use uSilex\Application;
 
 
 class ApplicationTest extends TestCase
 {
     
-    public function testApplicationInterfaces()
+    public function testBoot()
     {
         $app = new Application;
-       
-        $this->assertInstanceOf('\\uSilex\\HttpKernel', $app );
+        
+        $provider = new class implements ServiceProviderInterface {
+            public function register(Container $app){$app['bootme']=false;}
+            public function boot(Container $app){ $app['bootme']=true;}
+        };
+        
+        $app->register($provider);
+        $app->boot();
+        
+        $this->assertTrue($app['bootme']);
     }
+ 
     
-    
-    public function testHandle()
+    public function testRun()
     {
         $app = new Application;
         
         $app['request'] = $this->createMock('\\Psr\\Http\\Message\\ServerRequestInterface');
+        $response = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
+        $app['kernel'] = $this->createMock('\\Psr\\Http\\Server\\RequestHandlerInterface');
+        $app['kernel']->method('handle')->willReturn($response);
+        $app['uSilex.errorManagement'] = false;
+        $app['response.emit'] = $app->protect( function(){ echo "OK"; });
         
-        $response1 = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
-        $response2 = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
-        
-        $middleware1 = $this->createMock('\\Psr\\Http\\Server\\MiddlewareInterface');
-        $middleware1->method('process')->willReturn($response1);
-        
-        $postprocessor1 = $this->createMock('\\uSilex\\Api\\ResponseProcessorInterface');
-        $postprocessor1->method('process')->willReturn($response2);
-        
-        $app['middlewareService'] = function ($app) use($middleware1){ return $middleware1;};       
-        
-        $app['postProcessor'] = function ($app) use($postprocessor1){ return $postprocessor1;};
-        $app->onResponse('postProcessor');
-        
-        $app['responseEmitter'] = $app->protect( function($response) use($response2){
-            if ($response!=$response2) {throw new Exception('Test failed');}
-        });
-        
-        $actualResponse = $app->run('middlewareService');
-        
+        $actualResponse= $app->run();
         $this->assertTrue($actualResponse);
+        $this->expectOutputString('OK');
     }
     
     
-    public function testHandleWithNoPostProcessing()
+    
+    public function testRunWithoutRequestCustomErrorManagement()
     {
         $app = new Application;
-        
-        $app['request'] = $this->createMock('\\Psr\\Http\\Message\\ServerRequestInterface');
-        
-        $response1 = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
-        
-        $middleware1 = $this->createMock('\\Psr\\Http\\Server\\MiddlewareInterface');
-        $middleware1->method('process')->willReturn($response1);
-        
-        $app['middlewareService'] = function ($app) use($middleware1){ return $middleware1;};
+        $app['uSilex.errorManagement'] = $app->protect( function(){ echo 'Error detected';} );
+        $actualResponse = $app->run();
+        $this->assertFalse($actualResponse);
+        $this->expectOutputString('Error detected');
+    }
+    
+    
+    /**
+     * @expectedException \Exception
+     */
+    public function testRunWithoutRequestErrorManagementDisabled()
+    {
+        $app = new Application;
+        $app['uSilex.errorManagement'] = false;
+        $actualResponse = $app->run();
+    }
 
-        
-        $app['responseEmitter'] = $app->protect( function($response) use($response1){
-            if ($response!=$response1) {throw new Exception('Test failed');}
-        });
-        
-        $actualResponse = $app->run('middlewareService');
-        
-        $this->assertTrue($actualResponse);
-    }
-    
-    
     
     /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage request service must be defined
+     * @runInSeparateProcess
      */
-    public function testHandleWithoutRequest()
+    public function testRunErrorDefaultErrorManagement()
     {
         $app = new Application;
         $actualResponse = $app->run();
-    }
-    
-    
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage request is not an http server request
-     */
-    public function testHandleInvalidRequestType()
-    {
-        $app = new Application;
-        $app['request'] = "a string instead of a request";
-        $actualResponse = $app->run();
+        $this->expectOutputString('Internal error. Identifier "kernel" is not defined.');
+        $this->assertFalse($actualResponse);
     }
     
 }
