@@ -1,3 +1,5 @@
+![µSilex logo](logo.png)
+
 µSilex
 ======
 
@@ -7,7 +9,6 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/badges/build.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/build-status/master)
 
-![µSilex logo](logo.png)
 
 µSilex (aka micro silex) is a micro framework inspired by Pimple and PSR standards. All with less tha 100 lines of code!
 
@@ -85,24 +86,25 @@ out-of-the-box µSilex give to you a set of Service Providers (in the src/Provid
 
 This example uses the [Relay](http://relayphp.com/2.x) library for PSR-15 http handle provider and [Diactoros](https://docs.zendframework.com/zend-diactoros/) for PSR-7 http messages.
 
-	<?php
-	require_once __DIR__.'/../vendor/autoload.php';
-	use uSilex\Application;
-	use Zend\Diactoros\Response\TextResponse;
-	use Zend\Diactoros\ServerRequestFactory;
-	use Relay\Relay;
-	
-	$app = new Application;
-	$app['uSilex.request'] = function() { return ServerRequestFactory::fromGlobals();};
-	$app['uSilex.responseEmitter'] = $app->protect( function($response) {echo $response->getBody();});
-	$app['message'] = 'hello world!';
-	$app['uSilex.httpHandler'] = function($app) { 
-	    return new Relay([ 
-	        function() use($app){ return new TextResponse($app['message']);}
-	    ]); 
-	};
-	$app->run();
+```php
+<?php
+require_once __DIR__.'/../vendor/autoload.php';
+use uSilex\Application;
+use Zend\Diactoros\Response\TextResponse;
+use Zend\Diactoros\ServerRequestFactory;
+use Relay\Relay;
 
+$app = new Application;
+$app['uSilex.request'] = function() { return ServerRequestFactory::fromGlobals();};
+$app['uSilex.responseEmitter'] = $app->protect( function($response) {echo $response->getBody();});
+$app['message'] = 'hello world!';
+$app['uSilex.httpHandler'] = function($app) { 
+    return new Relay([ 
+        function() use($app){ return new TextResponse($app['message']);}
+    ]); 
+};
+$app->run();
+```
 
 See more examples in the html directory.
 
