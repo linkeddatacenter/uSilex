@@ -7,18 +7,19 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/badges/build.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/build-status/master)
 
-µSilex (aka micro silex) is a micro framework inspired by Pimple and PSR standards. All can you with less tha 100 lines of code!
+![µSilex logo](logo.png)
+
+µSilex (aka micro silex) is a micro framework inspired by Pimple and PSR standards. All with less tha 100 lines of code!
 
 This project is a try to build a standard conceptual framework for developing micro-services and
 APIs endpoints that require maximum performances with a minimum of memory footprint.
 
-Why [Pimple](https://pimple.symfony.com/)? Because it is lazy, consistent, elegant, small (about 80 lines of code). What else? 
+Why [Pimple](https://pimple.symfony.com/)? Because it is lazy, consistent, elegant and small (about 80 lines of code). What else? 
 
 Why [PSR standards](https://www.php-fig.org/psr)? Because it is a successful community project with a lot of good implementations.
 
 Why µSilex? Silex was a great framework now abandoned in favour of Symfony + Flex. This is good when you need more power and flexibility. But you have to pay a price in terms of complexity and memory footprint. 
-
-µSilex it is a new project that covers a small subset of the original Silex project: a µSilex is just a Pimple container enabling the reuse of implementations that follow [PSR specifications](https://www.php-fig.org/psr). That's it. µSilex inflates Pimple with just few lines of code!
+µSilex it is a new project that covers a small subset of the original Silex project: a µSilex Application is just a Pimple Container implementing the [PSR-15 specifications](https://www.php-fig.org/psr/psr-15/). That's it. 
 
 As a matter of fact, in the JAMStack, Docker and XaaS era, you can let lot of conventional framework features to other components in the system application architecture (i.e. caching, authentication, security, monitoring, etc. etc).
 
