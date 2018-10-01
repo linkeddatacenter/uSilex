@@ -1,4 +1,5 @@
 <?php
+$time_start = microtime(true);
 /* same as in README.md */
 require_once __DIR__.'/../vendor/autoload.php';
 use uSilex\Application;
@@ -16,3 +17,8 @@ $app['uSilex.httpHandler'] = function($app) {
     ]); 
 };
 $app->run();
+
+echo "\n<pre>";
+echo "\nmemory_get_usage: ".memory_get_usage ();
+echo "\nscript execution time:". (microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]);
+echo "<pre>";

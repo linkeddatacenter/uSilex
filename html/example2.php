@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__.'/../vendor/autoload.php';
+$time_start = microtime(true);
 
 use uSilex\Application;
 use uSilex\Provider\Psr15\RelayServiceProvider;
@@ -30,3 +31,6 @@ $app['myMiddleware'] = function($app){
 $app['handler.queue'] = ['myMiddleware'];
 
 $app->run();
+
+echo "\nmemory_get_usage: ".memory_get_usage ();
+echo "\nscript execution time:". (microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]);

@@ -1,6 +1,5 @@
 <?php
 namespace examples\routing;
-
 use Pimple\ServiceProviderInterface;
 use Pimple\Container;
 use Aura\Router\RouterContainer;
@@ -10,9 +9,9 @@ use Middlewares\ErrorHandler;
 
 /**
  * this configuration reuse middleware and other
- * components directry from the network
+ * components available from https://github.com/middlewares project
  */
-class ServiceConfiguration implements ServiceProviderInterface
+class MiddlewaresServiceProvider implements ServiceProviderInterface
 {
 
     public function register(Container $app)
