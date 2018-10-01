@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use uSilex\Application;
-use uSilex\provider\Psr15\RelayServiceProvider;
+use uSilex\Provider\Psr15\RelayServiceProvider;
 use Relay\Relay;
 
 
