@@ -26,54 +26,60 @@ class ApplicationTest extends TestCase
     }
  
     
+    public function testProcess()
+    {
+        $app = new Application;
+        
+        $request = $this->createMock('\\Psr\\Http\\Message\\ServerRequestInterface');
+        $expectedResponse = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
+        $handler = $this->createMock('\\Psr\\Http\\Server\\RequestHandlerInterface');
+        $handler->method('handle')->willReturn($expectedResponse);
+        
+        $actualResponse= $app->process($request,$handler);
+        $this->assertEquals($expectedResponse, $actualResponse);
+    }
+
+    
     public function testRun()
     {
         $app = new Application;
         
-        $app['request'] = $this->createMock('\\Psr\\Http\\Message\\ServerRequestInterface');
-        $response = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
-        $app['kernel'] = $this->createMock('\\Psr\\Http\\Server\\RequestHandlerInterface');
-        $app['kernel']->method('handle')->willReturn($response);
-        $app['uSilex.errorManagement'] = false;
-        $app['response.emit'] = $app->protect( function(){ echo "OK"; });
-        
+        $app['uSilex.request'] = $this->createMock('\\Psr\\Http\\Message\\ServerRequestInterface');
+        $expectedResponse = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
+        $app['uSilex.httpHandler'] = $this->createMock('\\Psr\\Http\\Server\\RequestHandlerInterface');
+        $app['uSilex.httpHandler']->method('handle')->willReturn($expectedResponse);
+        $app['uSilex.responseEmitter'] = $app->protect(function($response) use($expectedResponse) { 
+            echo ($expectedResponse==$response)?"OK":"FAIL"; 
+        });
+    
         $actualResponse= $app->run();
         $this->assertTrue($actualResponse);
         $this->expectOutputString('OK');
     }
-    
-    
-    
-    public function testRunWithoutRequestCustomErrorManagement()
+
+    public function testRunWithCustomErrorManagement()
     {
         $app = new Application;
-        $app['uSilex.errorManagement'] = $app->protect( function(){ echo 'Error detected';} );
+        $app['uSilex.exceptionHandler'] = $app->protect(function($e, $app) {
+            return $e->getMessage();
+        });
+        $app['uSilex.responseEmitter'] = $app->protect(function($r) {
+            echo $r;
+        });
         $actualResponse = $app->run();
         $this->assertFalse($actualResponse);
-        $this->expectOutputString('Error detected');
+        $this->expectOutputString('Identifier "uSilex.request" is not defined.');
     }
-    
-    
-    /**
-     * @expectedException \Exception
-     */
-    public function testRunWithoutRequestErrorManagementDisabled()
-    {
-        $app = new Application;
-        $app['uSilex.errorManagement'] = false;
-        $actualResponse = $app->run();
-    }
-
     
     /**
      * @runInSeparateProcess
      */
-    public function testRunErrorDefaultErrorManagement()
+    public function testRunWithoutRequestCustomErrorManagement()
     {
         $app = new Application;
         $actualResponse = $app->run();
-        $this->expectOutputString('Internal error. Identifier "kernel" is not defined.');
         $this->assertFalse($actualResponse);
+        $this->expectOutputString('Identifier "uSilex.request" is not defined.');
     }
     
 }

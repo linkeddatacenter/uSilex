@@ -13,17 +13,34 @@ namespace uSilex;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Exception;
 
 /**
  * The uSilex framework class.
 */
-class Application extends Container
+class Application extends Container implements MiddlewareInterface
 {
     
     protected $providers = [];
     protected $booted = false;
-    
+
+    /**
+     * Instantiate a new Application.
+     *
+     * Objects and parameters can be passed as argument to the constructor.
+     *
+     * @param array $values the parameters or objects
+     */
+    public function __construct(array $values = [])
+    {
+        parent::__construct($values);
+        
+        $this['debug'] = false;
+    }
     
     /**
      * Redefine Registers a service provider.
@@ -64,35 +81,47 @@ class Application extends Container
         
         return $this;
     }
- 
-    
+
     /**
      * Handles the request and delivers the response.
      *
      */
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        // ensure container is booted
+        if( !$this->booted ){
+            $this->boot();
+        }
+            
+        return $handler->handle($request);
+    }
+
+    
+    /**
+     * Process the request and delivers the response with error management.
+     *
+     */
     public function run() : bool
     {
+        // ensure a default for 'uSilex.responseEmitter'
+        if( !isset($this['uSilex.responseEmitter'])){ 
+            $this['uSilex.responseEmitter'] = $this->protect(function(){});
+        }
+        
         try {
-            if( !isset($this['response.emit'])){
-                $this['response.emit'] =  $this->protect( function(){} );
-            }
-            
-            $this->boot();
-            $response = $this['kernel']->handle($this['request']);
+            $response = $this->process($this['uSilex.request'],$this['uSilex.httpHandler']);
            
-            call_user_func($this['response.emit'],$response);
+            call_user_func($this['uSilex.responseEmitter'],$response, $this);
             
             $result = true;
         } catch (Exception $e) {
             $result = false;
-            if( isset($this['uSilex.errorManagement']) && !$this['uSilex.errorManagement']) {
-                throw $e;
-            } elseif (isset($this['uSilex.errorManagement'])) {
-                call_user_func($this['uSilex.errorManagement'],$e);
+            if( isset($this['uSilex.exceptionHandler'])) {
+                $response = call_user_func($this['uSilex.exceptionHandler'], $e, $this);
+                call_user_func($this['uSilex.responseEmitter'],$response, $this);
             } else {
                 header('X-PHP-Response-Code: '. $e->getCode(), true, 500);
-                echo "Internal error. " . $e->getMessage();
-                $this['uSilex.panic.error'] =  $e;
+                echo $e->getMessage();
             }
         }
           

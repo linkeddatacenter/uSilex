@@ -3,9 +3,6 @@ namespace examples\routing;
 
 use Pimple\ServiceProviderInterface;
 use Pimple\Container;
-use Zend\Diactoros\Response\TextResponse;
-use Zend\Diactoros\ServerRequestFactory;
-use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
 use Aura\Router\RouterContainer;
 use Middlewares\AuraRouter;
 use Middlewares\RequestHandler;
@@ -20,7 +17,7 @@ class ServiceConfiguration implements ServiceProviderInterface
 
     public function register(Container $app)
     {
-        
+            
         // Error handler middleware configuration
         // from: https://github.com/middlewares/error-handler
         $app['errorHandlingMiddleware'] = function() {
@@ -45,24 +42,14 @@ class ServiceConfiguration implements ServiceProviderInterface
         // from https://github.com/middlewares/request-handler
         $app['requestHandlerMiddleware'] = function($app) {
             return new RequestHandler();
-        };
-            
+        }; 
         
-        // uSilex core properties
-        $app['request'] = ServerRequestFactory::fromGlobals();
-        $app['response.emit'] = $app->protect(function($response) {
-            (new SapiEmitter)->emit($response);
-        });
-            
-        // kernel configuration:
-        // see http://relayphp.com/2.x
-        $app['kernel'] = function($app) {
-            return new \Relay\Relay([
-                $app['errorHandlingMiddleware'],
-                $app['auraRouterMiddleware'],
-                $app['requestHandlerMiddleware']
-            ]);
-        };
+        // define middleware queue
+        $app['handler.queue'] = [
+            'errorHandlingMiddleware',
+            'auraRouterMiddleware',
+            'requestHandlerMiddleware'
+        ];
         
     }
 }
