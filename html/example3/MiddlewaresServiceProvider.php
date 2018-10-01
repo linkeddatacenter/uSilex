@@ -39,7 +39,7 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
         
         // register the RequestHandler
         // from https://github.com/middlewares/request-handler
-        $app['requestHandlerMiddleware'] = function($app) {
+        $app['requestHandlerMiddleware'] = function() {
             return new RequestHandler();
         }; 
         
