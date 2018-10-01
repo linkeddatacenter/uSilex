@@ -28,7 +28,7 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
         // from: https://github.com/middlewares/aura-router
         $app['basepath'] = '/';
         $app['auraRouterMiddleware'] = function($app) {
-            $routeContainer =  new RouterContainer($app['basepath']);
+            $routeContainer = new RouterContainer($app['basepath']);
             $routeMap = $routeContainer->getMap();
            
             include "routes.php";

@@ -56,14 +56,14 @@ class DiactorosServiceProvider implements ServiceProviderInterface
             (new SapiEmitter())->emit($response);
         });
         
-        $app['uSilex.exceptionHandler'] = $app->protect(function($e,$app) {
+        $app['uSilex.exceptionHandler'] = $app->protect(function($e, $app) {
             $exceptionData = new \StdClass();
             $exceptionData->code = $e->getCode();
             $exceptionData->message = $e->getMessage();
-            if($app['debug']==true) {
+            if ($app['debug'] == true) {
                 $exceptionData->trace = $e->getTrace();
             }
-            return new JsonResponse($exceptionData,500);
+            return new JsonResponse($exceptionData, 500);
         });
 
     }
