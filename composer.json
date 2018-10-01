@@ -2,7 +2,7 @@
     "type": "library",
     "name": "linkeddatacenter/usilex",    
     "description": "Super lightweight framework based on a subset of SILEX. Great for micro services and JAMstack",
-    "keywords": ["LinkedData.Center", "Pimple", "Silex", "psr-15", "PSR", "micro services", "JAMstack", 'middleware'],
+    "keywords": ["LinkedData.Center", "Pimple", "Silex", "psr-15", "PSR", "micro services", "JAMstack", "middleware"],
     "authors": [
         {
             "name": "Enrico Fagnoni",
