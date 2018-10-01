@@ -74,7 +74,7 @@ class Application extends Container implements MiddlewareInterface
         $this->booted = true;
         
         foreach ($this->providers as $provider) {
-            if ( ($provider instanceof ServiceProviderInterface) && method_exists($provider,'boot') ) {
+            if (($provider instanceof ServiceProviderInterface) && method_exists($provider, 'boot')) {
                 $provider->boot($this);
             }
         }
@@ -89,7 +89,7 @@ class Application extends Container implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         // ensure container is booted
-        if( !$this->booted ){
+        if (!$this->booted) {
             $this->boot();
         }
             
@@ -104,23 +104,23 @@ class Application extends Container implements MiddlewareInterface
     public function run() : bool
     {
         // ensure a default for 'uSilex.responseEmitter'
-        if( !isset($this['uSilex.responseEmitter'])){ 
-            $this['uSilex.responseEmitter'] = $this->protect(function(){});
+        if (!isset($this['uSilex.responseEmitter'])) { 
+            $this['uSilex.responseEmitter'] = $this->protect(function() {});
         }
         
         try {
-            $response = $this->process($this['uSilex.request'],$this['uSilex.httpHandler']);
+            $response = $this->process($this['uSilex.request'], $this['uSilex.httpHandler']);
            
-            call_user_func($this['uSilex.responseEmitter'],$response, $this);
+            call_user_func($this['uSilex.responseEmitter'], $response, $this);
             
             $result = true;
         } catch (Exception $e) {
             $result = false;
-            if( isset($this['uSilex.exceptionHandler'])) {
+            if (isset($this['uSilex.exceptionHandler'])) {
                 $response = call_user_func($this['uSilex.exceptionHandler'], $e, $this);
-                call_user_func($this['uSilex.responseEmitter'],$response, $this);
+                call_user_func($this['uSilex.responseEmitter'], $response, $this);
             } else {
-                header('X-PHP-Response-Code: '. $e->getCode(), true, 500);
+                header('X-PHP-Response-Code: '.$e->getCode(), true, 500);
                 echo $e->getMessage();
             }
         }

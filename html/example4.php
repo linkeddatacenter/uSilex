@@ -14,13 +14,13 @@ use function Zend\Stratigility\middleware;
 use function Zend\Stratigility\path;
 
 $app = new Application;
-$app->register( new ZendPipeServiceProvider());
-$app->register( new DiactorosServiceProvider());
+$app->register(new ZendPipeServiceProvider());
+$app->register(new DiactorosServiceProvider());
 $app['basepath'] = '/example4.php';
 
 // Landing page
-$app['piper']->pipe(middleware(function ($req, $handler) use ($app) {
-    if (! in_array($req->getUri()->getPath(), [$app['basepath'].'/', $app['basepath']], true)) {
+$app['piper']->pipe(middleware(function($req, $handler) use ($app) {
+    if (!in_array($req->getUri()->getPath(), [$app['basepath'].'/', $app['basepath']], true)) {
         return $handler->handle($req);
     }
     
@@ -32,7 +32,7 @@ $app['piper']->pipe(middleware(function ($req, $handler) use ($app) {
 $app['message'] = "Hello World";
   
 // Another page
-$app['piper']->pipe(path($app['basepath'].'/hello', middleware(function ($req, $handler) {
+$app['piper']->pipe(path($app['basepath'].'/hello', middleware(function($req, $handler) {
     $response = new Response();
     $response->getBody()->write("Hello. Try '/hello/world'");
     
@@ -40,7 +40,7 @@ $app['piper']->pipe(path($app['basepath'].'/hello', middleware(function ($req, $
 })));
     
 // Another page
-$app['piper']->pipe(path($app['basepath'].'/foo', middleware(function ($req, $handler) use ($app) {
+$app['piper']->pipe(path($app['basepath'].'/foo', middleware(function($req, $handler) use ($app) {
     $response = new Response();
     $response->getBody()->write($app['message']);
     
@@ -48,7 +48,7 @@ $app['piper']->pipe(path($app['basepath'].'/foo', middleware(function ($req, $ha
 })));
     
 // 404 handler
-$app['piper']->pipe(new NotFoundHandler(function () {
+$app['piper']->pipe(new NotFoundHandler(function() {
     return new Response();
 }));
 
@@ -56,6 +56,6 @@ $app['piper']->pipe(new NotFoundHandler(function () {
 $app->run();
 
 echo "\n<pre>";
-echo "\nmemory_get_usage: ".memory_get_usage ();
-echo "\nscript execution time:". (microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]);
+echo "\nmemory_get_usage: ".memory_get_usage();
+echo "\nscript execution time:".(microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]);
 echo "\n</pre>";

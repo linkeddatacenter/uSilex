@@ -8,17 +8,17 @@ use Zend\Diactoros\ServerRequestFactory;
 use Relay\Relay;
 
 $app = new Application;
-$app['uSilex.request'] = function() { return ServerRequestFactory::fromGlobals();};
-$app['uSilex.responseEmitter'] = $app->protect( function($response) {echo $response->getBody();});
+$app['uSilex.request'] = function() { return ServerRequestFactory::fromGlobals(); };
+$app['uSilex.responseEmitter'] = $app->protect(function($response) {echo $response->getBody(); });
 $app['message'] = 'hello world!';
 $app['uSilex.httpHandler'] = function($app) { 
     return new Relay([ 
-        function() use($app){ return new TextResponse($app['message']);}
+        function() use($app){ return new TextResponse($app['message']); }
     ]); 
 };
 $app->run();
 
 echo "\n<pre>";
-echo "\nmemory_get_usage: ".memory_get_usage ();
-echo "\nscript execution time:". (microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]);
+echo "\nmemory_get_usage: ".memory_get_usage();
+echo "\nscript execution time:".(microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]);
 echo "<pre>";

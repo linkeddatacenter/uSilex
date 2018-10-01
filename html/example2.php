@@ -17,20 +17,20 @@ class MyRequestProcessor implements MiddlewareInterface {
     
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return new TextResponse( $this->get('message'));
+        return new TextResponse($this->get('message'));
     }
 }  
 
 $app = new Application;
-$app->register( new RelayServiceProvider());
-$app->register( new DiactorosServiceProvider());
+$app->register(new RelayServiceProvider());
+$app->register(new DiactorosServiceProvider());
 $app['message'] = 'hello world!';
-$app['myMiddleware'] = function($app){
-    return new MyRequestProcessor($app) ;
+$app['myMiddleware'] = function($app) {
+    return new MyRequestProcessor($app);
 };
 $app['handler.queue'] = ['myMiddleware'];
 
 $app->run();
 
-echo "\nmemory_get_usage: ".memory_get_usage ();
-echo "\nscript execution time:". (microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]);
+echo "\nmemory_get_usage: ".memory_get_usage();
+echo "\nscript execution time:".(microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]);
