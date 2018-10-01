@@ -6,7 +6,6 @@ use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use uSilex\Application;
 use uSilex\Provider\Psr15\RelayServiceProvider;
-use Relay\Relay;
 
 
 class RelayServiceProviderTest extends TestCase

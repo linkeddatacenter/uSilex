@@ -10,17 +10,17 @@
 [![Build Status](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/badges/build.png?b=master)](https://scrutinizer-ci.com/g/linkeddatacenter/uSilex/build-status/master)
 
 
-µSilex (aka micro silex) is a micro framework inspired by Pimple and PSR standards. All with less tha 100 lines of code!
+µSilex (aka micro silex) is a micro framework inspired by Pimple and PSR standards. All with less than 100 lines of code!
 
-This project is a try to build a standard conceptual framework for developing micro-services and
+This project is a try to build a standard middleware framework for developing micro-services and
 APIs endpoints that require maximum performances with a minimum of memory footprint.
 
-Why [Pimple](https://pimple.symfony.com/)? Because it is lazy, consistent, elegant and small (about 80 lines of code). What else? 
+Why [Pimple](https://pimple.symfony.com/)? Because it is lazy, consistent, fast, elegant and small (about 80 lines of code). What else? 
 
-Why [PSR standards](https://www.php-fig.org/psr)? Because it is a successful community project with a lot of good implementations.
+Why [PSR standards](https://www.php-fig.org/psr)? Because it is a successful community project with a lot of good introperable implementations (psr15-middlewares, zend stratigility, Guzzle, etc. etc.).
 
 Why µSilex? Silex was a great framework now abandoned in favour of Symfony + Flex. This is good when you need more power and flexibility. But you have to pay a price in terms of complexity and memory footprint. 
-µSilex it is a new project that covers a small subset of the original Silex project: a µSilex Application is just a Pimple Container implementing the [PSR-15 specifications](https://www.php-fig.org/psr/psr-15/). That's it. 
+µSilex it is a new project that covers a small subset of the original Silex project: a µSilex Application is just a Pimple Container implementing all [PSR-15 specifications](https://www.php-fig.org/psr/psr-15/). That's it. 
 
 As a matter of fact, in the JAMStack, Docker and XaaS era, you can let lot of conventional framework features to other components in the system application architecture (i.e. caching, authentication, security, monitoring, etc. etc).
 
@@ -79,7 +79,7 @@ There are tons of libraries that implement great reusable middleware that are fu
 
 You can create your custom framework just selecting the the components that fit your needs. 
 
-out-of-the-box µSilex give to you a set of Service Providers (in the src/Provider directory ) and a set of traits (in the src/Application directory). 
+out-of-the-box µSilex give to you a set of Service Providers (in the src/Provider directory ) 
 
 
 µSilex also provides the *Psr11Trait* as an helper to declare a constructor to inject a  Pimple Container with PSR11 interface in any class.
