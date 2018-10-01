@@ -48,7 +48,7 @@ class ZendPipeServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $app)
     {        
-        $app['piper'] = function($app) {
+        $app['piper'] = function() {
             return new MiddlewarePipe();
         };
         
