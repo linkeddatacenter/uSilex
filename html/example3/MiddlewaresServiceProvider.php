@@ -43,12 +43,5 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
             return new RequestHandler();
         }; 
         
-        // define middleware queue
-        $app['handler.queue'] = [
-            'errorHandlingMiddleware',
-            'auraRouterMiddleware',
-            'requestHandlerMiddleware'
-        ];
-        
     }
 }

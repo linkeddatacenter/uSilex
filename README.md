@@ -53,7 +53,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
-class \My\Middleware implements MiddlewareInterface {
+class MyMiddleware implements MiddlewareInterface {
     use \uSilex\Psr11Trait;
     
     public function process(
@@ -99,11 +99,12 @@ This fragment  uses the [Relay](http://relayphp.com/2.x) library for PSR-15 http
 
 ```php
 require_once __DIR__.'/../vendor/autoload.php';
+include "MyMiddleware.php"; // here your MyMiddleware class definition
 $app = new \uSilex\Application;
 $app['uSilex.request'] = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
 $app['uSilex.responseEmitter'] = $app->protect( function($response) {echo $response->getBody();});
 $app['uSilex.httpHandler'] = function($app) { 
-    return new \Relay\Relay([new \My\Middleware($app)]); 
+    return new \Relay\Relay([new MyMiddleware($app)]); 
 };
 $app->run();
 ```
@@ -174,7 +175,7 @@ class MyMiddleware implements MiddlewareInterface {
 $app = new Application;
 $app->register(new Psr15Provider());
 $app->register(new Psr7Provider());
-$app['myMiddleware'] = function($app) { return new MyMiddleware($app) };
+$app['myMiddleware'] = function($app) { return new MyMiddleware($app); };
 $app['message'] = 'hello world!';
 $app['handler.queue'] = ['myMiddleware'];
 $app->run();

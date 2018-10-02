@@ -1,7 +1,5 @@
 <?php
 namespace examples\routing;
-$time_start = microtime(true);
-
 require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/example3/MiddlewaresServiceProvider.php';
 
@@ -18,6 +16,12 @@ $app->register(new MiddlewaresServiceProvider);
 $app['basepath'] = '/example3.php';
 $app['routefile'] = 'routes.php'.
     
+// define middleware queue
+$app['handler.queue'] = [
+    'errorHandlingMiddleware',
+    'auraRouterMiddleware',
+    'requestHandlerMiddleware'
+];
 
 $app->run();
 
