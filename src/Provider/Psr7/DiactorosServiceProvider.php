@@ -20,15 +20,14 @@ use Zend\Diactoros\Response\JsonResponse;
 use Zend\Diactoros\Response\TextResponse;
 use Exception;
 
-
 /**
  * This service provider uses Zend\Diactoros  to resolve uSilex as PSR-7 dependencies.
- * 
+ *
  * As default, uSilex.responseEmitter uses SapiEmitter class.
- * 
+ *
  * As default, uSilex.exceptionHandler uses JsonResponse as custom response with 500 as error code.
- *  
- *  
+ *
+ *
  * Add this dependencies to your project:
  *
  * composer require zendframework/zend-diactoros
@@ -48,15 +47,15 @@ class DiactorosServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $app)
     {
-        $app['uSilex.request'] = function() {
+        $app['uSilex.request'] = function () {
             return ServerRequestFactory::fromGlobals();
         };
         
-        $app['uSilex.responseEmitter'] = $app->protect(function($response) {
+        $app['uSilex.responseEmitter'] = $app->protect(function ($response) {
             (new SapiEmitter())->emit($response);
         });
         
-        $app['uSilex.exceptionHandler'] = $app->protect(function($e, $app) {
+        $app['uSilex.exceptionHandler'] = $app->protect(function ($e, $app) {
             $exceptionData = new \StdClass();
             $exceptionData->code = $e->getCode();
             $exceptionData->message = $e->getMessage();
@@ -65,6 +64,5 @@ class DiactorosServiceProvider implements ServiceProviderInterface
             }
             return new JsonResponse($exceptionData, 500);
         });
-
     }
 }

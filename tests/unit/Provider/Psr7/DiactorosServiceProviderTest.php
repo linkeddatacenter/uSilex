@@ -10,14 +10,12 @@ use Zend\Diactoros\Response\TextResponse;
 use Zend\Diactoros\Response\JsonResponse;
 use Exception;
 
-
 class DiactorosServiceProviderTest extends TestCase
 {
-    
     public function testRegistration()
     {
         $app = new Application;
-        $app->register( new DiactorosServiceProvider() );
+        $app->register(new DiactorosServiceProvider());
         $this->assertTrue(isset($app['uSilex.request']));
         $this->assertTrue(isset($app['uSilex.responseEmitter']));
         $this->assertTrue(isset($app['uSilex.exceptionHandler']));
@@ -30,7 +28,7 @@ class DiactorosServiceProviderTest extends TestCase
     public function testexceptionHandler()
     {
         $app = new Application;
-        $app->register( new DiactorosServiceProvider() );
+        $app->register(new DiactorosServiceProvider());
         $e = new Exception('test exception');
         $response = $app['uSilex.exceptionHandler']($e, $app);
         $this->assertInstanceOf('\\Psr\\Http\\Message\\ResponseInterface', $response);
@@ -43,11 +41,9 @@ class DiactorosServiceProviderTest extends TestCase
     public function testResponseEmitter()
     {
         $app = new Application;
-        $app->register( new DiactorosServiceProvider() );
+        $app->register(new DiactorosServiceProvider());
         $response = new TextResponse('ok response');
         $app['uSilex.responseEmitter']($response, $app);
         $this->expectOutputString('ok response');
     }
- 
-    
 }

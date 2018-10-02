@@ -1,8 +1,9 @@
 <?php
 namespace EXAMPLE;
+
 require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/example4/StratigilityServiceProvider.php';
-include "MyMiddleware.php"; 
+include "MyMiddleware.php";
 
 use uSilex\Application;
 use uSilex\Provider\Psr15\ZendPipeServiceProvider;

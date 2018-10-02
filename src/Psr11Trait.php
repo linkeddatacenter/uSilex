@@ -20,7 +20,6 @@ use Pimple\Container as PimpleContainer;
  */
 trait Psr11Trait
 {
-        
     private $pimple;
     
     public function __construct(PimpleContainer $pimple)
@@ -37,5 +36,4 @@ trait Psr11Trait
     {
         return isset($this->pimple[$id]);
     }
-    
 }

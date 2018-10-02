@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
  * This file is part of the uSilex framework.
@@ -24,7 +24,6 @@ use Exception;
 */
 class Application extends Container implements MiddlewareInterface
 {
-    
     protected $providers = [];
     protected $booted = false;
 
@@ -89,7 +88,7 @@ class Application extends Container implements MiddlewareInterface
      *
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {            
+    {
         return $handler->handle($request);
     }
 
@@ -101,8 +100,9 @@ class Application extends Container implements MiddlewareInterface
     public function run() : bool
     {
         // ensure a default for 'uSilex.responseEmitter'
-        if (!isset($this['uSilex.responseEmitter'])) { 
-            $this['uSilex.responseEmitter'] = $this->protect(function() {});
+        if (!isset($this['uSilex.responseEmitter'])) {
+            $this['uSilex.responseEmitter'] = $this->protect(function () {
+            });
         }
         
         try {
@@ -124,5 +124,4 @@ class Application extends Container implements MiddlewareInterface
           
         return $result;
     }
-    
 }

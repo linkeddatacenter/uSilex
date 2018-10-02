@@ -10,9 +10,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Zend\Diactoros\Response\TextResponse;
 
-class MyMiddleware implements MiddlewareInterface {
+class MyMiddleware implements MiddlewareInterface
+{
     use Psr11Trait;
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
         return new \Zend\Diactoros\Response\TextResponse($this->get('message'));
     }
 }
@@ -20,7 +22,9 @@ class MyMiddleware implements MiddlewareInterface {
 $app = new Application;
 $app->register(new Psr15Provider());
 $app->register(new Psr7Provider());
-$app['myMiddleware'] = function($app) { return new MyMiddleware($app); };
+$app['myMiddleware'] = function ($app) {
+    return new MyMiddleware($app);
+};
 $app['message'] = 'hello world!';
 $app['handler.queue'] = ['myMiddleware'];
 $app->run();

@@ -7,19 +7,15 @@ use Pimple\ServiceProviderInterface;
 use uSilex\Application;
 use uSilex\Provider\Psr15\RelayServiceProvider;
 
-
 class RelayServiceProviderTest extends TestCase
 {
-    
     public function testRegistration()
     {
         $app = new Application;
-        $app->register( new RelayServiceProvider() );
+        $app->register(new RelayServiceProvider());
         $this->assertTrue(isset($app['uSilex.httpHandler']));
         $this->assertTrue(isset($app['handler.queue']));
         $this->assertTrue(is_array($app['handler.queue']));
         $this->assertInstanceOf('\\Relay\\Relay', $app['uSilex.httpHandler']);
     }
- 
-  
 }

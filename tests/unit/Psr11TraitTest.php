@@ -14,7 +14,6 @@ namespace uSilex\Tests;
 use PHPUnit\Framework\TestCase;
 use Pimple\Container;
 
-
 class Psr11TraitTest extends TestCase
 {
     public function testTrait()
@@ -24,8 +23,7 @@ class Psr11TraitTest extends TestCase
             use \uSilex\Psr11Trait;
         };
         
-        $this->assertTrue( $obj->has('a_key'));
-        $this->assertEquals( 'a_value',  $obj->get('a_key'));
+        $this->assertTrue($obj->has('a_key'));
+        $this->assertEquals('a_value', $obj->get('a_key'));
     }
-    
 }

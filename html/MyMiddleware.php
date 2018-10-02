@@ -6,7 +6,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
-class MyMiddleware implements MiddlewareInterface {
+class MyMiddleware implements MiddlewareInterface
+{
     use \uSilex\Psr11Trait;
     
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
