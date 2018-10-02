@@ -23,16 +23,18 @@
      *     a concrete middleware  instance or a callable with the signatur recognized by relay
      * 
      *     $app->register( new ZenPipeServiceProvider() );
-     *     $app['piper']->pipe(path('/foo', middleware(function ($req, $handler) {
+     *     $app['handler.queue'] = [
+     *      path('/foo', middleware(function ($req, $handler) {
      *         $response = new Response();
      *         $response->getBody()->write('FOO!');
      *     
      *         return $response;
-     *     })));
+     *      })),
      *     
-     *     $app['piper']->pipe(new NotFoundHandler(function () {
+     *      new NotFoundHandler(function () {
      *         return new Response();
-     *     }));
+     *      });
+     *     ];
      */
 namespace uSilex\Provider\Psr15;
 
@@ -52,8 +54,14 @@ class ZendPipeServiceProvider implements ServiceProviderInterface
             return new MiddlewarePipe();
         };
         
+        $app['handler.queue'] = [];
+        
         $app['uSilex.httpHandler'] = function($app) {
-            return $app['piper'];
+            $piper = $app['piper'];
+            foreach ($app['handler.queue'] as $middlewareService){
+                $piper->pipe( $app[$middlewareService]);
+            }
+            return $piper;
         };
     }
     

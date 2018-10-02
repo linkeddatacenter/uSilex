@@ -44,7 +44,7 @@ class RelayServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $app)
     {        
-        $app['handler.queue'] = function($app) {return []; };
+        $app['handler.queue'] = [];
         
         $app['uSilex.httpHandler'] = function($app) {
                      

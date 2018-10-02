@@ -26,7 +26,7 @@ As a matter of fact, in the JAMStack, Docker and XaaS era, you can let lot of co
 
 Is µSilex a replacement of Silex? No, but it could be used to build your own "Silex like" framework .
 
-Ask not why nobody is doing this. You are the "nobody"!
+There are alternatives to µSilex? Yes of course. For example the [Zend  Expressive](https://docs.zendframework.com/zend-expressive/) component of the Zend Framework shares similar principles. But it is not "container centric" and is bound to zend libraries. Beside piping, Zend Expressive implements  routing as mechanism mechanisms for adding middleware to your application.
 
 Have a nice day!
 
@@ -35,76 +35,151 @@ Have a nice day!
 
 `compose require linkeddatacenter/usilex`
 
-
-## Usage
+## Overview
 
 Basically a µSilex provides the class **Application** that is a Pimple container that implements the PSR-15 middleware interface.
 
-µSilex is not bound to any specific other specific implementations (apart from Pimple);
-instead µSilex relay to PSR specifications. In particular µSilex uses PSR-7 specifications for http messages, PSR-15 for managing http handles and middleware and PSR-11 for containers.
- 
-For this reason, to bind µSilex with specific interface specifications, you need to configure some entries in the conainer:
+Middleware is now a very popular topic in the developer community, The idea behind it is “wrapping” your application logic with additional request processing logic, and then chaining as much of those wrappers as you like. So when your server receives a request, it would be first processed by your middlewares, and then after you generate a response it will also be processed by the same set (image from Zend Expressive).
+
+![architecture](architecture.png)
+
+Note that in this model, the traditional *routing->controller->view* is just a feature of an optional "router" middleware. In other words Model View Controller it is no more the only possible application architecture. This is good, because if you, for example, are developing a smart proxy microservice, the terms "model" and "view" do not apply. The only constraint is that least one middleware in the middleware chain is supposed to gererate a response (could be a response error, of course). 
+
+A middleware is a piece of software that implements the PSR-15 middleware interface:
+
+```php
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Server\MiddlewareInterface;
+
+class \My\Middleware implements MiddlewareInterface {
+    use \uSilex\Psr11Trait;
+    
+    public function process(
+    	ServerRequestInterface $request, 
+    	RequestHandlerInterface $handler
+    	): ResponseInterface
+    {
+        //here your code that returns a response or passes the control to the handler
+    }
+}  
+```
+
+The best practices suggest to pass a context for dependency injection to the middleware through a PSR-11 container. For this reason µSilex provides a ready to use trait (\uSilex\Psr11Trait).
+
+µSilex is not bound to any specific specific implementations (apart from Pimple) nor 
+provides any middleware implementation.
+
+Instead µSilex realizes a framework to use existing standard implementation. µSilex adopts PSR-7 specifications for http messages, PSR-15 for managing http handles and middleware and PSR-11 for containers.
+
+## Usage
+
+To bind µSilex with specific interface specifications, you need to configure some entries in the container:
 
 - **uSilex.request**: a service that instantiate an implementation of PSR-7 server request object 
-- **uSilex.responseEmitter**: an optional parameter containing a callable that echoes the http. If not provided, no output is generated. 
-- **uSilex.exceptionHandler** a service that generates an http response from a PHP Exception. If not provided just an http 500 header with a text body is ouput
+- **uSilex.responseEmitter**: an optional callable that echoes the http. If not provided, no output is generated. 
+- **uSilex.exceptionHandler** a callable that generates an http response from a PHP Exception. If not provided just an http 500 header with a text body is ouput
 - **uSilex.httpHandler**: a service that instantiate an implementation of PSR-15 http handler
 
-Beside the PSR-15 middleware *process* method, µSilex Application exposes the *run* method that realize typical server process workflow:
+µSilex Application exposes the PSR-15 middleware *process* method and the *run* method that realize typical server process workflow:
 - creates a request using uSilex.request service
 - calls the uSilex.httpHandler
 - emits the http response calling uSilex.responseEmitter
 
-If some php exceptions are thrown in the process, they are translated in Response and then  emitted.
+If some php exceptions are thrown in the process, they are translated in Response by uSilex.exceptionHandler and then  emitted by uSilex.responseEmitter.
 
-Here is the signature for uSilex.responseEmitter:
-
-```php
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
-use Pimple\Container;
-
-function (
-    Request $request, // the request
-    Container $options  // the container (optional)
-)  {
-	echo ....
-}
-
-```
-
-
+The signature for uSilex.responseEmitter is `function ($request, $container) { echo ....}` . 
+The signature for uSilex.exceptionHandler is`function ($exception, $container) {}`.
 
 There are tons of libraries that implement great reusable middleware that are fully compatible with µSilex. For example see [MW library](https://github.com/middlewares/psr15-middlewares)) and lot of great PSR-7 implementations that match µSilex requirements. µSilex is also compatible with lot of Silex Service Providers and with some Silex Application traits.
 
 You can create your custom framework just selecting the the components that fit your needs. 
+This fragment  uses the [Relay](http://relayphp.com/2.x) library for PSR-15 http handle provider and [Diactoros](https://docs.zendframework.com/zend-diactoros/) for PSR-7 http messages.
 
-out-of-the-box µSilex give to you a set of Service Providers (in the src/Provider directory ) 
+```php
+require_once __DIR__.'/../vendor/autoload.php';
+$app = new \uSilex\Application;
+$app['uSilex.request'] = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
+$app['uSilex.responseEmitter'] = $app->protect( function($response) {echo $response->getBody();});
+$app['uSilex.httpHandler'] = function($app) { 
+    return new \Relay\Relay([new \My\Middleware($app)]); 
+};
+$app->run();
+```
+
+### the µSilex service providers
+
+out-of-the-box µSilex give to you a set of Service Providers that you can use as example to implement yours.
+See the code in  src/Provider directory.
 
 
-µSilex also provides the *Psr11Trait* as an helper to declare a constructor to inject a  Pimple Container with PSR11 interface in any class.
+#### Provider\Psr7\DiactorosServiceProvider
 
-This example uses the [Relay](http://relayphp.com/2.x) library for PSR-15 http handle provider and [Diactoros](https://docs.zendframework.com/zend-diactoros/) for PSR-7 http messages.
+Bound a µSilex application to the [Zend Diactoros]() implementation for Psr7 specifications.
+
+#### Provider\Psr15\RelayServiceProvider
+
+Bound a µSilex application to [Relay](https://github.com/relayphp/Relay.Relay), a fast, no frill implementation of the PSR-15 specifications.
+
+#### Provider\Psr15\ZendPipeServiceProvider
+
+Bound a µSilex application to *MiddlewarePipe* part of the [zend-stratigility library](https://github.com/zendframework/zend-stratigility/) Psr15 implementation.
+
+### Configuring new service providers
+
+Services provider are normal Pimple service providers that optionally define the method "boot". This method will be called only once by the application method *boot*. Use this feature only when strictly necessary.
+
+*Note that this is a bit different from old Silex approach, where boot was always called automatically before running the application.* 
+
+A best practice to write a PSR-15 service provider is to allow user to declare middleware a service and to allow user to define the middleware queue (i.e. pipeline) in *handler.queue* application container The *handler.queue* element that must resolve in an array. For instance:
+
+```php
+...
+$app= new Application;
+$app->register( new MyFrameworkServiceProvider() };
+$app['my.errorHandler'] = function($app) { return new \My\ErrorHandlerMiddleWare($app) };
+$app['my.router'] = function($app) { return new \My\RouterMiddleWare($app) };
+$app['my.notfound'] = function($app) { return new \My\NotFoundMiddleWare($app) };
+$app['handler.queue'] = [
+	'my.errorHandler'
+	'my.router'
+	'my.notfound'
+];
+$app->boot()->run();
+```
+
+## A complete example
 
 ```php
 <?php
 require_once __DIR__.'/../vendor/autoload.php';
 use uSilex\Application;
+use uSilex\Psr11Trait;
+use uSilex\Provider\Psr15\RelayServiceProvider as Psr15Provider;
+use uSilex\Provider\Psr7\DiactorosServiceProvider as Psr7Provider ;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Zend\Diactoros\Response\TextResponse;
-use Zend\Diactoros\ServerRequestFactory;
-use Relay\Relay;
+
+class MyMiddleware implements MiddlewareInterface {
+    use Psr11Trait;
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+        return new \Zend\Diactoros\Response\TextResponse( $this->get('message'));
+    }
+}  
 
 $app = new Application;
-$app['uSilex.request'] = function() { return ServerRequestFactory::fromGlobals();};
-$app['uSilex.responseEmitter'] = $app->protect( function($response) {echo $response->getBody();});
+$app->register(new Psr15Provider());
+$app->register(new Psr7Provider());
+$app['myMiddleware'] = function($app) { return new MyMiddleware($app) };
 $app['message'] = 'hello world!';
-$app['uSilex.httpHandler'] = function($app) { 
-    return new Relay([ 
-        function() use($app){ return new TextResponse($app['message']);}
-    ]); 
-};
+$app['handler.queue'] = ['myMiddleware'];
 $app->run();
 ```
+
 
 See more examples in the html directory.
 
@@ -128,6 +203,10 @@ Point your browser to:
 Destroy the container:
 
 	$ docker rm -f apache
+
+## Extending µSilex
+
+Ask not why nobody is doing this. You are the "nobody"!
 
 
 ## Credits

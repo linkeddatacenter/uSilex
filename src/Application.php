@@ -40,6 +40,7 @@ class Application extends Container implements MiddlewareInterface
         parent::__construct($values);
         
         $this['debug'] = false;
+        $this['handler.queue'] = [];
     }
     
     /**
@@ -82,17 +83,13 @@ class Application extends Container implements MiddlewareInterface
         return $this;
     }
 
+    
     /**
      * Handles the request and delivers the response.
      *
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
-        // ensure container is booted
-        if (!$this->booted) {
-            $this->boot();
-        }
-            
+    {            
         return $handler->handle($request);
     }
 
