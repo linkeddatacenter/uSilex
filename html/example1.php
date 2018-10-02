@@ -4,7 +4,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 include "MyMiddleware.php"; // here your MyMiddleware class definition
 $app = new \uSilex\Application;
 $app['uSilex.request'] = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
-$app['uSilex.responseEmitter'] = $app->protect( function($response) {echo $response->getBody(); });
+$app['uSilex.responseEmitter'] = $app->protect(function($response) {echo $response->getBody(); });
 $app['uSilex.httpHandler'] = function($app) {
     return new \Relay\Relay([new MyMiddleware($app)]);
 };

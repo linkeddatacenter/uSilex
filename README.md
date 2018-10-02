@@ -17,16 +17,25 @@ APIs endpoints that require maximum performances with a minimum of memory footpr
 
 Why [Pimple](https://pimple.symfony.com/)? Because it is lazy, consistent, fast, elegant and small (about 80 lines of code). What else? 
 
-Why [PSR standards](https://www.php-fig.org/psr)? Because it is a successful community project with a lot of good introperable implementations (psr15-middlewares, zend stratigility, Guzzle, etc. etc.).
+Why [PSR standards](https://www.php-fig.org/psr)? Because it is a successful community project with a lot of good implementations (psr15-middlewares, zend stratigility, Guzzle, etc. etc.).
 
 Why µSilex? Silex was a great framework now abandoned in favour of Symfony + Flex. This is good when you need more power and flexibility. But you have to pay a price in terms of complexity and memory footprint. 
-µSilex it is a new project that covers a small subset of the original Silex project: a µSilex Application is just a Pimple Container implementing all [PSR-15 specifications](https://www.php-fig.org/psr/psr-15/). That's it. 
+µSilex it is a new project that covers a small subset of the original Silex project: a µSilex Application is just a Pimple Container implementing the [PSR-15 specifications](https://www.php-fig.org/psr/psr-15/). That's it. 
 
-As a matter of fact, in the JAMStack, Docker and XaaS era, you can let lot of conventional framework features to other components in the system application architecture (i.e. caching, authentication, security, monitoring, etc. etc).
+As a matter of fact, in the JAMStack, Docker and XaaS era, you can let lot of conventional framework features to other components in the system application architecture (i.e. caching, authentication, security, monitoring, rendering, etc. etc).
 
 Is µSilex a replacement of Silex? No, but it could be used to build your own "Silex like" framework .
 
-There are alternatives to µSilex? Yes of course. For example the [Zend  Expressive](https://docs.zendframework.com/zend-expressive/) component of the Zend Framework shares similar principles. But it is not "container centric" and is bound to zend libraries. Beside piping, Zend Expressive implements  routing as mechanism mechanisms for adding middleware to your application.
+There are alternatives to µSilex? Yes of course. For example the [Zend  Expressive](https://docs.zendframework.com/zend-expressive/) component of the Zend Framework shares similar principles. But it is not "container focused" and it is bound to zend libraries. Beside routing, Zend Expressive implements "piping" as mechanism for adding middlewares to your application.
+
+µSilex is based on few principles:
+
+- keep it **simple**: so you can understand all your code;
+- keep it **small**: so you can control your project;
+- keep it **fast**: well, keep it faster...;
+- use **PSR standards**: do not reinvent the wheel;
+- adopt the **middlewares** architecture;
+- **"one-for-all" does not exist!**. And µSilex is not an exception. Select the right framework for your problem.
 
 Have a nice day!
 
@@ -43,7 +52,7 @@ Middleware is now a very popular topic in the developer community, The idea behi
 
 ![architecture](architecture.png)
 
-Note that in this model, the traditional *routing->controller->view* is just a feature of an optional "router" middleware. In other words Model View Controller it is no more the only possible application architecture. This is good, because if you, for example, are developing a smart proxy microservice, the terms "model" and "view" do not apply. The only constraint is that least one middleware in the middleware chain is supposed to gererate a response (could be a response error, of course). 
+Note that in this model, the traditional *routing->controller->view* is just a feature of an optional "router" middleware. In other words Model View Controller it is no more the only possible application architecture. This is good, because if you, for example, are developing a smart proxy microservice, the terms "model" and "view" do not apply. The only constraint is that least one middleware in the middleware chain is supposed to generate a response. 
 
 A middleware is a piece of software that implements the PSR-15 middleware interface:
 
@@ -66,12 +75,16 @@ class MyMiddleware implements MiddlewareInterface {
 }  
 ```
 
-The best practices suggest to pass a context for dependency injection to the middleware through a PSR-11 container. For this reason µSilex provides a ready to use trait (\uSilex\Psr11Trait).
+µSilex provides a ready to use trait (\uSilex\Psr11Trait) to pass a PSR-11 container to the middleware.
 
 µSilex is not bound to any specific specific implementations (apart from Pimple) nor 
 provides any middleware implementation.
 
 Instead µSilex realizes a framework to use existing standard implementation. µSilex adopts PSR-7 specifications for http messages, PSR-15 for managing http handles and middleware and PSR-11 for containers.
+
+Hey, what about dependency injection in middleware? 
+Well, µSilex likes the *inversion of control* design pattern and Pimple
+is a great tool to support it. How to use this pattern is up to you. A quick and dirty solution is to make middleware an  implementation of a *container aware interface* (someone calls this anti-pattern). The best practices suggest to inject dependencies at property level. µSilex do not like configuration file: it relies on PHP code, easy to write and easy to debug; so autowiring is not an option: you have to do it by hand. Just to know: PHP-DI (a popular dependency injection library) contains about 1400 lines of code in 59 files: more than ten times the cumulative code of µSilex.
 
 ## Usage
 
@@ -79,7 +92,7 @@ To bind µSilex with specific interface specifications, you need to configure so
 
 - **uSilex.request**: a service that instantiate an implementation of PSR-7 server request object 
 - **uSilex.responseEmitter**: an optional callable that echoes the http. If not provided, no output is generated. 
-- **uSilex.exceptionHandler** a callable that generates an http response from a PHP Exception. If not provided just an http 500 header with a text body is ouput
+- **uSilex.exceptionHandler** a callable that generates an http response from a PHP Exception. If not provided just an http 500 header with a text body is output
 - **uSilex.httpHandler**: a service that instantiate an implementation of PSR-15 http handler
 
 µSilex Application exposes the PSR-15 middleware *process* method and the *run* method that realize typical server process workflow:
@@ -102,7 +115,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 include "MyMiddleware.php"; // here your MyMiddleware class definition
 $app = new \uSilex\Application;
 $app['uSilex.request'] = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
-$app['uSilex.responseEmitter'] = $app->protect( function($response) {echo $response->getBody(); });
+$app['uSilex.responseEmitter'] = $app->protect(function($response) {echo $response->getBody(); });
 $app['uSilex.httpHandler'] = function($app) { 
     return new \Relay\Relay([new MyMiddleware($app)]); 
 };
@@ -129,11 +142,11 @@ Bound a µSilex application to *MiddlewarePipe* part of the [zend-stratigility l
 
 ### Configuring new service providers
 
-Services provider are normal Pimple service providers that optionally define the method "boot". This method will be called only once by the application method *boot*. Use this feature only when strictly necessary.
+µSilex Services provider are normal Pimple service providers that, optionally, define the method *boot*. This method will be called only once by the application method *boot*. Use this feature only when strictly necessary.
 
 *Note that this is a bit different from old Silex approach, where boot was always called automatically before running the application.* 
 
-A best practice to write a PSR-15 service provider is to allow user to declare middleware a service and to allow user to define the middleware queue (i.e. pipeline) in *handler.queue* application container The *handler.queue* element that must resolve in an array. For instance:
+A best practice to write a PSR-15 service provider is to allow users to declare middleware as a service and to allow users to define the middleware queue (i.e. pipeline) in the application container usin *handler.queue* as item id . The *handler.queue* element must be an array or a service that resolves in an implementation of the iterable interface. For instance:
 
 ```php
 ...
