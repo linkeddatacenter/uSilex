@@ -47,15 +47,15 @@ class DiactorosServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $app)
     {
-        $app['uSilex.request'] = function () {
+        $app['uSilex.request'] = function() {
             return ServerRequestFactory::fromGlobals();
         };
         
-        $app['uSilex.responseEmitter'] = $app->protect(function ($response) {
+        $app['uSilex.responseEmitter'] = $app->protect(function($response) {
             (new SapiEmitter())->emit($response);
         });
         
-        $app['uSilex.exceptionHandler'] = $app->protect(function ($e, $app) {
+        $app['uSilex.exceptionHandler'] = $app->protect(function($e, $app) {
             $exceptionData = new \StdClass();
             $exceptionData->code = $e->getCode();
             $exceptionData->message = $e->getMessage();
