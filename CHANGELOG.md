@@ -23,5 +23,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 First release. 
 
 
-[Unreleased]: https://github.com/e-artspace/uSilex/compare/1.0.1...HEAD
-[1.0.1]: https://github.com/e-artspace/uSilex/compare/1.0.0...1.0.1
+[Unreleased]: https://github.com/linkeddatacenter/uSilex/compare/1.0.1...HEAD
+[1.0.1]: https://github.com/linkeddatacenter/uSilex/compare/1.0.0...1.0.1
