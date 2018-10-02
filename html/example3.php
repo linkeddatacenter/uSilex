@@ -14,7 +14,7 @@ $app->register(new MiddlewaresServiceProvider);
 
 // here an example of how to change default registered options and services.
 $app['basepath'] = '/example3.php';
-$app['routefile'] = 'routes.php'.
+$app['routefile'] = 'routes.php';
     
 // define middleware queue
 $app['handler.queue'] = [

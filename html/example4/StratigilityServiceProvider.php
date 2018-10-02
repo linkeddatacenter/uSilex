@@ -42,7 +42,7 @@ class StratigilityServiceProvider implements ServiceProviderInterface
         };
         
         // using standard middleware as defaultt page
-        $app['default_page'] = function($app) { return new MyMiddleware($app);};
+        $app['default_page'] = function($app) { return new MyMiddleware($app); };
 
     }
 }

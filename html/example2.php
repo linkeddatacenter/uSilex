@@ -3,7 +3,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 use uSilex\Application;
 use uSilex\Psr11Trait;
 use uSilex\Provider\Psr15\RelayServiceProvider as Psr15Provider;
-use uSilex\Provider\Psr7\DiactorosServiceProvider as Psr7Provider ;
+use uSilex\Provider\Psr7\DiactorosServiceProvider as Psr7Provider;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -13,7 +13,7 @@ use Zend\Diactoros\Response\TextResponse;
 class MyMiddleware implements MiddlewareInterface {
     use Psr11Trait;
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-        return new \Zend\Diactoros\Response\TextResponse( $this->get('message'));
+        return new \Zend\Diactoros\Response\TextResponse($this->get('message'));
     }
 }
 
