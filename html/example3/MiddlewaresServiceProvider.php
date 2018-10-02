@@ -19,7 +19,7 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
             
         // Error handler middleware configuration
         // from: https://github.com/middlewares/error-handler
-        $app['errorHandlingMiddleware'] = function () {
+        $app['errorHandlingMiddleware'] = function() {
             return (new ErrorHandler())->catchExceptions(true);
         };
         
@@ -27,7 +27,7 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
         // aura routing middleware configuration
         // from: https://github.com/middlewares/aura-router
         $app['basepath'] = '/';
-        $app['auraRouterMiddleware'] = function ($app) {
+        $app['auraRouterMiddleware'] = function($app) {
             $routeContainer = new RouterContainer($app['basepath']);
             $routeMap = $routeContainer->getMap();
            
@@ -39,7 +39,7 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
         
         // register the RequestHandler
         // from https://github.com/middlewares/request-handler
-        $app['requestHandlerMiddleware'] = function () {
+        $app['requestHandlerMiddleware'] = function() {
             return new RequestHandler();
         };
     }

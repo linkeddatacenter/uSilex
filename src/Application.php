@@ -101,7 +101,7 @@ class Application extends Container implements MiddlewareInterface
     {
         // ensure a default for 'uSilex.responseEmitter'
         if (!isset($this['uSilex.responseEmitter'])) {
-            $this['uSilex.responseEmitter'] = $this->protect(function () {
+            $this['uSilex.responseEmitter'] = $this->protect(function() {
             });
         }
         

@@ -22,7 +22,7 @@ class MyMiddleware implements MiddlewareInterface
 $app = new Application;
 $app->register(new Psr15Provider());
 $app->register(new Psr7Provider());
-$app['myMiddleware'] = function ($app) {
+$app['myMiddleware'] = function($app) {
     return new MyMiddleware($app);
 };
 $app['message'] = 'hello world!';
