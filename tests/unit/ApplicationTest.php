@@ -15,14 +15,16 @@ class ApplicationTest extends TestCase
         $app = new Application;
         
         $provider = new class implements ServiceProviderInterface {
-            public function register(Container $app){$app['bootme']=false;}
-            public function boot(Container $app){ $app['bootme']=true;}
+            public function register(Container $app){$app['bootme']=0;}
+            public function boot(Container $app){ $app['bootme']=$app['bootme']+1;}
         };
         
         $app->register($provider);
+        $this->assertEquals(0,$app['bootme']);
         $app->boot();
-        
-        $this->assertTrue($app['bootme']);
+        $this->assertEquals(1,$app['bootme']);
+        $app->boot(); 
+        $this->assertEquals(1,$app['bootme'], "ignored secon boot");
     }
  
     

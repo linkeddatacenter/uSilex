@@ -52,7 +52,7 @@ class DiactorosServiceProvider implements ServiceProviderInterface
             return ServerRequestFactory::fromGlobals();
         };
         
-        $app['uSilex.responseEmitter'] = $app->protect(function($response, $app) {
+        $app['uSilex.responseEmitter'] = $app->protect(function($response) {
             (new SapiEmitter())->emit($response);
         });
         
