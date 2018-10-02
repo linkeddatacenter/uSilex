@@ -59,7 +59,7 @@ class ZendPipeServiceProvider implements ServiceProviderInterface
         $app['uSilex.httpHandler'] = function($app) {
             $piper = $app['piper'];
             foreach ($app['handler.queue'] as $middlewareService) {
-                $piper->pipe( $app[$middlewareService]);
+                $piper->pipe($app[$middlewareService]);
             }
             return $piper;
         };
