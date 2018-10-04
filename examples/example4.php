@@ -14,7 +14,7 @@ $app->register(new ZendPipeServiceProvider());
 $app->register(new DiactorosServiceProvider());
 $app->register(new StratigilityServiceProvider);
 
-$app['basepath'] = '/example4.php';
+$app['basepath'] = '/examples/example4.php';
 $app['message'] = 'Hello World';
 $app['handler.queue'] = [
     'home_page',

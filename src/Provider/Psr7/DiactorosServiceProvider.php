@@ -16,7 +16,6 @@ use Pimple\ServiceProviderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\ServerRequestFactory;
 use Zend\HttpHandlerRunner\Emitter\SapiEmitter;
-use Zend\Diactoros\Response\JsonResponse;
 use Zend\Diactoros\Response\TextResponse;
 use Exception;
 
@@ -54,15 +53,9 @@ class DiactorosServiceProvider implements ServiceProviderInterface
         $app['uSilex.responseEmitter'] = $app->protect(function($response) {
             (new SapiEmitter())->emit($response);
         });
-        
-        $app['uSilex.exceptionHandler'] = $app->protect(function($e, $app) {
-            $exceptionData = new \StdClass();
-            $exceptionData->code = $e->getCode();
-            $exceptionData->message = $e->getMessage();
-            if ($app['debug'] == true) {
-                $exceptionData->trace = $e->getTrace();
-            }
-            return new JsonResponse($exceptionData, 500);
+              
+        $app['uSilex.exceptionHandler'] = $app->protect(function($e) {
+            return new TextResponse($e->getMessage(), 500);
         });
     }
 }

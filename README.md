@@ -46,13 +46,13 @@ Have a nice day!
 
 ## Overview
 
-Basically a µSilex provides the class **Application** that is a Pimple container that implements the PSR-15 middleware interface.
+Basically a µSilex provides the class **Application** that is a Pimple container that implements both the PSR-15 middleware interface and PSR-11 Container interface.
 
 Middleware is now a very popular topic in the developer community, The idea behind it is “wrapping” your application logic with additional request processing logic, and then chaining as much of those wrappers as you like. So when your server receives a request, it would be first processed by your middlewares, and then after you generate a response it will also be processed by the same set (image from Zend Expressive).
 
 ![architecture](architecture.png)
 
-Note that in this model, the traditional *routing->controller->view* is just a feature of an optional "router" middleware. In other words Model View Controller it is no more the only possible application architecture. This is good, because if you, for example, are developing a smart proxy microservice, the terms "model" and "view" do not apply. The only constraint is that least one middleware in the middleware chain is supposed to generate a response. 
+Note that in this model, the traditional *routing* is just an optional step in middleware pipeline.
 
 A middleware is a piece of software that implements the PSR-15 middleware interface:
 
@@ -62,9 +62,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
-class MyMiddleware implements MiddlewareInterface {
-    use \uSilex\Psr11Trait;
-    
+class MyMiddleware implements MiddlewareInterface 
+{
     public function process(
     	ServerRequestInterface $request, 
     	RequestHandlerInterface $handler
@@ -75,16 +74,12 @@ class MyMiddleware implements MiddlewareInterface {
 }  
 ```
 
-µSilex provides a ready to use trait (\uSilex\Psr11Trait) to pass a PSR-11 container to the middleware.
+µSilex provides two ready to use anti-pattern traits: \uSilex\Psr11Trait that implements a PSR-11 interface and \uSilex\ContainerAwareTrait that attach a PSR-11 container (e.g a µSilex Application) to any object. 
 
 µSilex is not bound to any specific specific implementations (apart from Pimple) nor 
 provides any middleware implementation.
 
-Instead µSilex realizes a framework to use existing standard implementation. µSilex adopts PSR-7 specifications for http messages, PSR-15 for managing http handles and middleware and PSR-11 for containers.
-
-Hey, what about dependency injection in middleware? 
-Well, µSilex likes the *inversion of control* design pattern and Pimple
-is a great tool to support it. How to use this pattern is up to you. A quick and dirty solution is to make middleware an  implementation of a *container aware interface* (someone calls this anti-pattern). The best practices suggest to inject dependencies at property level. µSilex do not like configuration file: it relies on PHP code, easy to write and easy to debug; so autowiring is not an option: you have to do it by hand. Just to know: PHP-DI (a popular dependency injection library) contains about 1400 lines of code in 59 files: more than ten times the cumulative code of µSilex.
+Instead µSilex realizes a framework to use existing standard implementations. µSilex adopts PSR-7 specifications for http messages, PSR-15 for managing http handles and middleware and PSR-11 for containers.
 
 ## Usage
 
@@ -95,7 +90,7 @@ To bind µSilex with specific interface specifications, you need to configure so
 - **uSilex.exceptionHandler** a callable that generates an http response from a PHP Exception. If not provided just an http 500 header with a text body is output
 - **uSilex.httpHandler**: a service that instantiate an implementation of PSR-15 http handler
 
-µSilex Application exposes the PSR-15 middleware *process* method and the *run* method that realize typical server process workflow:
+µSilex Application exposes the *run* method that realize typical server process workflow:
 - creates a request using uSilex.request service
 - calls the uSilex.httpHandler
 - emits the http response calling uSilex.responseEmitter
@@ -103,7 +98,7 @@ To bind µSilex with specific interface specifications, you need to configure so
 If some php exceptions are thrown in the process, they are translated in Response by uSilex.exceptionHandler and then  emitted by uSilex.responseEmitter.
 
 The signature for uSilex.responseEmitter is `function ($request, $container) { echo ....}` . 
-The signature for uSilex.exceptionHandler is`function ($exception, $container) {}`.
+The signature for uSilex.exceptionHandler is `function ($exception, $container) {}`.
 
 There are tons of libraries that implement great reusable middleware that are fully compatible with µSilex. For example see [MW library](https://github.com/middlewares/psr15-middlewares)) and lot of great PSR-7 implementations that match µSilex requirements. µSilex is also compatible with lot of Silex Service Providers and with some Silex Application traits.
 
@@ -124,8 +119,8 @@ $app->run();
 
 ### the µSilex service providers
 
-out-of-the-box µSilex give to you a set of Service Providers that you can use as example to implement yours.
-See the code in  src/Provider directory.
+out-of-the-box µSilex give to you a set of Service Providers that you can use as example 
+to implement yours.
 
 
 #### Provider\Psr7\DiactorosServiceProvider
@@ -142,24 +137,25 @@ Bound a µSilex application to *MiddlewarePipe* part of the [zend-stratigility l
 
 ### Configuring new service providers
 
-µSilex Services provider are normal Pimple service providers that, optionally, define the method *boot*. This method will be called only once by the application method *boot*. Use this feature only when strictly necessary.
+µSilex Services provider are normal Pimple service providers that, optionally, define the method *boot*. This method will be called only once by the application method *boot*. Use this feature only if strictly necessary.
 
 *Note that this is a bit different from old Silex approach, where boot was always called automatically before running the application.* 
 
-A best practice to write a PSR-15 service provider is to allow users to declare middleware as a service and to allow users to define the middleware queue (i.e. pipeline) in the application container usin *handler.queue* as item id . The *handler.queue* element must be an array or a service that resolves in an implementation of the iterable interface. For instance:
+A best practice to write a PSR-15 service provider is to allow users to declare middlewares as Pimple services and to allow users to define the middleware queue (i.e. pipeline) in an array with the name *handler.queue*. The *handler.queue* element can also be a service that resolves in an implementation of the iterable interface. For instance:
 
 ```php
 ...
 $app= new Application;
-$app->register( new MyFrameworkServiceProvider() };
-$app['my.errorHandler'] = function($app) { return new \My\ErrorHandlerMiddleWare($app) };
+$app->register( new MyPsr7ServiceProvider() };
 $app['my.router'] = function($app) { return new \My\RouterMiddleWare($app) };
 $app['my.notfound'] = function($app) { return new \My\NotFoundMiddleWare($app) };
 $app['handler.queue'] = [
-	'my.errorHandler'
 	'my.router'
 	'my.notfound'
 ];
+$app['uSilex.httpHandler'] = function($app) {
+   return new MyHttpHandler($app['handler.queue']);
+};
 $app->boot()->run();
 ```
 
@@ -169,7 +165,7 @@ $app->boot()->run();
 <?php
 require_once __DIR__.'/../vendor/autoload.php';
 use uSilex\Application;
-use uSilex\Psr11Trait;
+use uSilex\ContainerAwareTrait;
 use uSilex\Provider\Psr15\RelayServiceProvider as Psr15Provider;
 use uSilex\Provider\Psr7\DiactorosServiceProvider as Psr7Provider ;
 use Psr\Http\Message\ResponseInterface;
@@ -179,9 +175,9 @@ use Psr\Http\Server\MiddlewareInterface;
 use Zend\Diactoros\Response\TextResponse;
 
 class MyMiddleware implements MiddlewareInterface {
-    use Psr11Trait;
+    use ContainerAwareTrait;
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-        return new \Zend\Diactoros\Response\TextResponse( $this->get('message'));
+        return new \Zend\Diactoros\Response\TextResponse( $this->getContainer()->get('message'));
     }
 }  
 
@@ -198,25 +194,15 @@ $app->run();
 See more examples in the html directory.
 
 
-## Testing 
+## Testing using docker:
 
-Using docker:
+	> docker run --rm -ti -v $PWD/.:/app composer bash
+	# composer install
+	# vendor/bin/phpunit
+	# exec php -S 0.0.0.0:8000	
 
-	$ docker run --rm -ti -v $PWD/.:/app composer bash
-	$ composer install
-	$ vendor/bin/phpunit
-	$ exit
-	$ docker run -d -p 8000:80 --name apache -v $PWD/.:/var/www/ php:apache
+Point your browser to http://localhost:8000/examples/ and terminate docker shell with ctr-c
 
-Point your browser to:
-
-- http://localhost:8000/example1.php
-- http://localhost:8000/example2.php
-- http://localhost:8000/example3.php/hello/world
-
-Destroy the container:
-
-	$ docker rm -f apache
 
 ## Extending µSilex
 

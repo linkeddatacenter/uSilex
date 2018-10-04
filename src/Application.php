@@ -13,6 +13,7 @@ namespace uSilex;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -22,24 +23,19 @@ use Exception;
 /**
  * The uSilex framework class.
 */
-class Application extends Container implements MiddlewareInterface
+class Application extends Container implements MiddlewareInterface, ContainerInterface
 {
     protected $providers = [];
     protected $booted = false;
 
-    /**
-     * Instantiate a new Application.
-     *
-     * Objects and parameters can be passed as argument to the constructor.
-     *
-     * @param array $values the parameters or objects
-     */
-    public function __construct(array $values = [])
+    public function get($id)
     {
-        parent::__construct($values);
-        
-        $this['debug'] = false;
-        $this['handler.queue'] = [];
+        return $this[$id];
+    }
+    
+    public function has($id)
+    {
+        return isset($this[$id]);
     }
     
     /**
