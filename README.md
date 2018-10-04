@@ -196,7 +196,7 @@ See more examples in the html directory.
 
 ## Testing using docker:
 
-	> docker run --rm -ti -v $PWD/.:/app composer bash
+	> docker run --rm -ti -p 8000:8000 -v $PWD/.:/app composer bash
 	# composer install
 	# vendor/bin/phpunit
 	# exec php -S 0.0.0.0:8000	

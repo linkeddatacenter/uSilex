@@ -41,4 +41,15 @@ trait ContainerAwareTrait
         
         return $this;
     }
+    
+    
+    /**
+     * A shortcut to get a value with a default
+     */
+    public function containerGet(String $id, $value=null)
+    {
+        return $this->container->has($id)
+        ?$this->container->get($id)
+        :$value;
+    }
 }
