@@ -30,4 +30,12 @@ class ContainerAwareTraitTest extends TestCase
         $this->assertEquals('a_value', $obj->containerGet('a_key','ignore default'));
         $this->assertEquals('default', $obj->containerGet('not__key','default'));
     }
+    
+    public function testcontainerGetWithEmptyContainer()
+    {
+        $obj = new class() {
+            use \uSilex\ContainerAwareTrait;
+        };
+        $this->assertEquals('default', $obj->containerGet('not_key','default'));
+    }
 }
