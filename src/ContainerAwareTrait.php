@@ -49,7 +49,7 @@ trait ContainerAwareTrait
     public function containerGet(String $id, $value=null)
     {
         return $this->container->has($id)
-        ?$this->container->get($id)
-        :$value;
+            ? $this->container->get($id)
+            : $value;
     }
 }

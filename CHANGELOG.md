@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - ContainerAware trait
 - PSR-11 implementation in Application
+- BootableProviderInterface
 
 
 ### Fixed

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the uSilex framework.
+ * This file is part of the uSilex project.
  *
  * (c) Enrico Fagnoni <enrico@linkeddata.center>
  *
@@ -13,6 +13,7 @@ namespace uSilex;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use uSilex\Api\BootableProviderInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -70,7 +71,7 @@ class Application extends Container implements MiddlewareInterface, ContainerInt
         $this->booted = true;
         
         foreach ($this->providers as $provider) {
-            if (($provider instanceof ServiceProviderInterface) && method_exists($provider, 'boot')) {
+            if (($provider instanceof BootableProviderInterface)) {
                 $provider->boot($this);
             }
         }

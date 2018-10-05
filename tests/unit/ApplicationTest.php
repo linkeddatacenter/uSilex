@@ -4,6 +4,7 @@ namespace uSilex\Tests;
 use PHPUnit\Framework\TestCase;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use uSilex\Api\BootableProviderInterface;
 use uSilex\Application;
 
 class ApplicationTest extends TestCase
@@ -12,7 +13,7 @@ class ApplicationTest extends TestCase
     {
         $app = new Application;
         
-        $provider = new class implements ServiceProviderInterface {
+        $provider = new class implements ServiceProviderInterface, BootableProviderInterface {
             public function register(Container $app)
             {
                 $app['bootme']=0;
