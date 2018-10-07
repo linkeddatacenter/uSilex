@@ -47,18 +47,16 @@ class ApplicationTest extends TestCase
     }
 
     
-    public function testRun()
+    public function testRunUsingDefaults()
     {
         $app = new Application;
         
         $app['uSilex.request'] = $this->createMock('\\Psr\\Http\\Message\\ServerRequestInterface');
-        $expectedResponse = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
+        $response = $this->createMock('\\Psr\\Http\\Message\\ResponseInterface');
+        $response->method('getBody')->willReturn('OK');
         $app['uSilex.httpHandler'] = $this->createMock('\\Psr\\Http\\Server\\RequestHandlerInterface');
-        $app['uSilex.httpHandler']->method('handle')->willReturn($expectedResponse);
-        $app['uSilex.responseEmitter'] = $app->protect(function ($response) use ($expectedResponse) {
-            echo ($expectedResponse==$response)?"OK":"FAIL";
-        });
-    
+        $app['uSilex.httpHandler']->method('handle')->willReturn($response);
+
         $actualResponse= $app->run();
         $this->assertTrue($actualResponse);
         $this->expectOutputString('OK');

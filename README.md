@@ -52,7 +52,7 @@ Middleware is now a very popular topic in the developer community, The idea behi
 
 ![architecture](architecture.png)
 
-Note that in this model, the traditional *routing* is just an optional step in middleware pipeline.
+Note that in this model, the traditional *routing by controller* is just an optional step in middleware pipeline.
 
 A middleware is a piece of software that implements the PSR-15 middleware interface:
 
@@ -137,9 +137,8 @@ Bound a µSilex application to *MiddlewarePipe* part of the [zend-stratigility l
 
 ### Configuring new service providers
 
-µSilex Services provider are normal Pimple service providers that, optionally, define the method *boot*. This method will be called only once by the application method *boot*. Use this feature only if strictly necessary.
+µSilex Services provider are normal Pimple service providers that, optionally, define the method *boot*. This method will be called only once by the application method *boot*. Use this feature only if strictly necessary. The boot method is called automatically by the Application run method.
 
-*Note that this is a bit different from old Silex approach, where boot was always called automatically before running the application.* 
 
 A best practice to write a PSR-15 service provider is to allow users to declare middlewares as Pimple services and to allow users to define the middleware queue (i.e. pipeline) in an array with the name *handler.queue*. The *handler.queue* element can also be a service that resolves in an implementation of the iterable interface. For instance:
 

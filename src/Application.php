@@ -75,6 +75,13 @@ class Application extends Container implements MiddlewareInterface, ContainerInt
                 $provider->boot($this);
             }
         }
+               
+        // ensure 'uSilex.responseEmitter' exists
+        if (!isset($this['uSilex.responseEmitter'])) {
+            $this['uSilex.responseEmitter'] = $this->protect(function($response) {
+                echo (string) $response->getBody();
+            });
+        }
         
         return $this;
     }
@@ -95,21 +102,17 @@ class Application extends Container implements MiddlewareInterface, ContainerInt
      *
      */
     public function run() : bool
-    {
-        // ensure a default for 'uSilex.responseEmitter'
-        if (!isset($this['uSilex.responseEmitter'])) {
-            $this['uSilex.responseEmitter'] = $this->protect(function() {
-            });
-        }
-        
-        try {
+    {            
+        try {    
+            // ensure boot
+            $this->boot();
+            
             $response = $this->process($this['uSilex.request'], $this['uSilex.httpHandler']);
            
             call_user_func($this['uSilex.responseEmitter'], $response, $this);
             
             $result = true;
         } catch (Exception $e) {
-            $result = false;
             if (isset($this['uSilex.exceptionHandler'])) {
                 $response = call_user_func($this['uSilex.exceptionHandler'], $e, $this);
                 call_user_func($this['uSilex.responseEmitter'], $response, $this);
@@ -117,6 +120,7 @@ class Application extends Container implements MiddlewareInterface, ContainerInt
                 header('X-PHP-Response-Code: '.$e->getCode(), true, 500);
                 echo $e->getMessage();
             }
+            $result = false;
         }
           
         return $result;
