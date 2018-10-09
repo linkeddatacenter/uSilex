@@ -176,7 +176,7 @@ use Zend\Diactoros\Response\TextResponse;
 class MyMiddleware implements MiddlewareInterface {
     use ContainerAwareTrait;
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-        return new \Zend\Diactoros\Response\TextResponse( $this->getContainer()->get('message'));
+        return new \Zend\Diactoros\Response\TextResponse( $this->containerGet('message', 'Hi'));
     }
 }  
 

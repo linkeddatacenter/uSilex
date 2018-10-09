@@ -22,7 +22,7 @@ use Pimple\Container as PimpleContainer;
  */
 trait ContainerAwareTrait
 {
-    private $container=null;
+    private $container = null;
     
     public function __construct(ContainerInterface $container = null)
     {
@@ -46,7 +46,7 @@ trait ContainerAwareTrait
     /**
      * A shortcut to get a value with a default
      */
-    public function containerGet(String $id, $value=null)
+    public function containerGet(String $id, $value = null)
     {
         return ($this->container && $this->container->has($id))
             ? $this->container->get($id)

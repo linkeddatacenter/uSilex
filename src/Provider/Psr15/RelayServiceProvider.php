@@ -45,13 +45,16 @@ class RelayServiceProvider implements ServiceProviderInterface
     {
         $app['handler.queue'] = [];
         
-        $app['uSilex.httpHandler'] = function($app) {
-
-            $resolver = function($entry) use ($app) {
-                return is_string($entry) ? $app[$entry] : $entry;
-            };
-                       
-            return new Relay($app['handler.queue'], $resolver);
+        $app['relay.pimpleResolver'] = $app->protect( function ($entry) use($app) {   
+            return is_string($entry) ? $app[$entry] : $entry;
+        });
+        
+        $app['relay.factory'] = $app->protect( function ($queue) use($app) {
+            return new Relay($queue, $app['relay.pimpleResolver']);
+        });
+        
+        $app['uSilex.httpHandler'] = function($app) {        
+            return $app['relay.factory']($app['handler.queue']);
         };
     }
 }

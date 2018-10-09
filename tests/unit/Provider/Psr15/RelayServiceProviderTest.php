@@ -15,6 +15,8 @@ class RelayServiceProviderTest extends TestCase
         $app->register(new RelayServiceProvider());
         $this->assertTrue(isset($app['uSilex.httpHandler']));
         $this->assertTrue(isset($app['handler.queue']));
+        $this->assertTrue(isset($app['relay.pimpleResolver']));
+        $this->assertTrue(isset($app['relay.factory']));
         $this->assertTrue(is_array($app['handler.queue']));
         $this->assertInstanceOf('\\Relay\\Relay', $app['uSilex.httpHandler']);
     }

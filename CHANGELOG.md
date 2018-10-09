@@ -12,11 +12,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - ContainerAware trait
 - PSR-11 implementation in Application
 - BootableProviderInterface
+- services 'relay.pimpleResolver' and 'relay.factory' to RelayServiceProvider
 
 ### Changed
 
-- Run calls always boot
-- if no uSilex.responseEmitter, the body of the response is emitted
+- Run method always calls boot
+- if no uSilex.responseEmitter function provided, the body of the response is emitted
+- updated composer,json
+- code formatting
 
 ### Fixed
 
