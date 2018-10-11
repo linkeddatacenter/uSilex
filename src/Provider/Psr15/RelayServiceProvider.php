@@ -45,11 +45,11 @@ class RelayServiceProvider implements ServiceProviderInterface
     {
         $app['handler.queue'] = [];
         
-        $app['relay.pimpleResolver'] = $app->protect( function ($entry) use($app) {   
+        $app['relay.pimpleResolver'] = $app->protect(function ($entry) use($app) {   
             return is_string($entry) ? $app[$entry] : $entry;
         });
         
-        $app['relay.factory'] = $app->protect( function ($queue) use($app) {
+        $app['relay.factory'] = $app->protect(function ($queue) use($app) {
             return new Relay($queue, $app['relay.pimpleResolver']);
         });
         
