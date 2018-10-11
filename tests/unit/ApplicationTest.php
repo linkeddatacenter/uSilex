@@ -61,11 +61,12 @@ class ApplicationTest extends TestCase
         $this->assertTrue($actualResponse);
         $this->expectOutputString('OK');
     }
+        
 
     public function testRunWithCustomErrorManagement()
     {
         $app = new Application;
-        $app['uSilex.exceptionHandler'] = $app->protect(function ($e, $app) {
+        $app['uSilex.exceptionHandler'] = $app->protect(function ($e) {
             return $e->getMessage();
         });
         $app['uSilex.responseEmitter'] = $app->protect(function ($r) {
