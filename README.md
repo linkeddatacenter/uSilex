@@ -97,8 +97,8 @@ To bind µSilex with specific interface specifications, you need to configure so
 
 If some php exceptions are thrown in the process, they are translated in Response by uSilex.exceptionHandler and then  emitted by uSilex.responseEmitter.
 
-The signature for uSilex.responseEmitter is `function ($request, $container) { echo ....}` . 
-The signature for uSilex.exceptionHandler is `function ($exception, $container) {}`.
+The signature for uSilex.responseEmitter is `function ($response) { echo ....}` . 
+The signature for uSilex.exceptionHandler is `function ($exception, $request) {}`.
 
 There are tons of libraries that implement great reusable middleware that are fully compatible with µSilex. For example see [MW library](https://github.com/middlewares/psr15-middlewares)) and lot of great PSR-7 implementations that match µSilex requirements. µSilex is also compatible with lot of Silex Service Providers and with some Silex Application traits.
 

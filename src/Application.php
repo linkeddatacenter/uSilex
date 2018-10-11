@@ -114,8 +114,8 @@ class Application extends Container implements MiddlewareInterface, ContainerInt
             $result = true;
         } catch (Exception $e) {
             if (isset($this['uSilex.exceptionHandler'])) {
-                $response = call_user_func($this['uSilex.exceptionHandler'], $e, $this);
-                call_user_func($this['uSilex.responseEmitter'], $response, $this);
+                $response = call_user_func($this['uSilex.exceptionHandler'], $e, ['uSilex.request']);
+                call_user_func($this['uSilex.responseEmitter'], $response);
             } else {
                 header('X-PHP-Response-Code: '.$e->getCode(), true, 500);
                 echo $e->getMessage();

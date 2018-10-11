@@ -25,6 +25,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Removed Application Constructor
 - Remove dependency from ['debug'] in Psr7 DiactorosServiceProvider
+- The signature for uSilex.responseEmitter was wrong
+- The signature for uSilex.exceptionHandler  was wrong
 
 ## [1.0.1] 2018-10-02
 
