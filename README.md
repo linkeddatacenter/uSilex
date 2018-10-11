@@ -100,10 +100,10 @@ If some php exceptions are thrown in the process, they are translated in Respons
 The signature for uSilex.responseEmitter is `function ($response) { echo ....}` . 
 The signature for uSilex.exceptionHandler is `function ($exception, $request) {}`.
 
-There are tons of libraries that implement great reusable middleware that are fully compatible with µSilex. For example see [MW library](https://github.com/middlewares/psr15-middlewares)) and lot of great PSR-7 implementations that match µSilex requirements. µSilex is also compatible with lot of Silex Service Providers and with some Silex Application traits.
+There are tons of libraries that implement great reusable middlewares and http handlers that are fully compatible with µSilex. For example see [MW library](https://github.com/middlewares/psr15-middlewares)). µSilex is also compatible with lot of Silex Service Providers and with some Silex Application traits.
 
 You can create your custom framework just selecting the the components that fit your needs. 
-This fragment  uses the [Relay](http://relayphp.com/2.x) library for PSR-15 http handle provider and [Diactoros](https://docs.zendframework.com/zend-diactoros/) for PSR-7 http messages.
+This fragment  uses the [Relay](http://relayphp.com/2.x) library for PSR-15 http handler  and [Diactoros](https://docs.zendframework.com/zend-diactoros/) for PSR-7 http messages.
 
 ```php
 require_once __DIR__.'/../vendor/autoload.php';
@@ -192,20 +192,22 @@ $app->run();
 
 See more examples in the html directory.
 
+## Developers quick start
 
-## Testing using docker:
+Install [docker](https://www.docker.com/) and run
 
-	> docker run --rm -ti -p 8000:8000 -v $PWD/.:/app composer bash
-	# composer install
-	# vendor/bin/phpunit
-	# exec php -S 0.0.0.0:8000	
+```
+docker run --rm -ti -p 8000:8000 -v $PWD/.:/app composer bash
+composer cs-fix
+composer test
+composer examples
+# Until ctr-c is pressed, point your browser to http://localhost:8000/examples/
+composer coverage
+# Until ctr-c is pressed, see coverage report at http://localhost:8000/
+exit
+```
 
-Point your browser to http://localhost:8000/examples/ and terminate docker shell with ctr-c
-
-
-## Extending µSilex
-
-Ask not why nobody is doing this. You are the "nobody"!
+Please see  [CONTRIBUTING](CONTRIBUTING.md) for contributing details.
 
 
 ## Credits

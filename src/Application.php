@@ -78,7 +78,7 @@ class Application extends Container implements MiddlewareInterface, ContainerInt
                
         // ensure 'uSilex.responseEmitter' exists
         if (!isset($this['uSilex.responseEmitter'])) {
-            $this['uSilex.responseEmitter'] = $this->protect(function($response) {
+            $this['uSilex.responseEmitter'] = $this->protect(function ($response) {
                 echo (string) $response->getBody();
             });
         }
@@ -102,8 +102,8 @@ class Application extends Container implements MiddlewareInterface, ContainerInt
      *
      */
     public function run() : bool
-    {            
-        try {    
+    {
+        try {
             // ensure boot
             $this->boot();
             $request = $this['uSilex.request'];

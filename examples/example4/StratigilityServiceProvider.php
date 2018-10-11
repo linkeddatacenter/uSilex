@@ -18,8 +18,8 @@ class StratigilityServiceProvider implements ServiceProviderInterface
     public function register(Container $app)
     {
         // using middleware function
-        $app['home_page'] = function($app) {
-            return middleware(function($req, $handler) use ($app) {
+        $app['home_page'] = function ($app) {
+            return middleware(function ($req, $handler) use ($app) {
                 if (!in_array($req->getUri()->getPath(), [$app['basepath'].'/', $app['basepath']], true)) {
                     return $handler->handle($req);
                 }
@@ -32,8 +32,8 @@ class StratigilityServiceProvider implements ServiceProviderInterface
         };
         
         // using path function
-        $app['hello_page'] = function($app) {
-            return path($app['basepath'].'/hi', middleware(function($req, $handler) {
+        $app['hello_page'] = function ($app) {
+            return path($app['basepath'].'/hi', middleware(function ($req, $handler) {
                 $response = new Response();
                 $response->getBody()->write("Hi. Try anything but/hi");
                 
@@ -42,7 +42,7 @@ class StratigilityServiceProvider implements ServiceProviderInterface
         };
         
         // using standard middleware as defaultt page
-        $app['default_page'] = function($app) {
+        $app['default_page'] = function ($app) {
             return new MyMiddleware($app);
         };
     }

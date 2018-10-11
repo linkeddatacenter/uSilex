@@ -14,7 +14,6 @@ namespace uSilex;
 use Psr\Container\ContainerInterface;
 use Pimple\Container as PimpleContainer;
 
-
 /**
  * Psr11 trait. Realize a Container aware interfce from a pimple container
  *
@@ -29,13 +28,13 @@ trait ContainerAwareTrait
         $this->container = $container;
     }
     
-    public function getContainer() : ContainerInterface 
+    public function getContainer() : ContainerInterface
     {
         return $this->container;
     }
     
     
-    public function setContainer(ContainerInterface $container) : self 
+    public function setContainer(ContainerInterface $container) : self
     {
         $this->container = $container;
         

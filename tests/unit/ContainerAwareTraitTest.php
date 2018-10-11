@@ -27,8 +27,8 @@ class ContainerAwareTraitTest extends TestCase
         $actualContainer = $obj->getContainer();
         $this->assertEquals('a_value', $obj->getContainer()->get('a_key'));
         $this->assertEquals('a_value', $obj->containerGet('a_key'));
-        $this->assertEquals('a_value', $obj->containerGet('a_key','ignore default'));
-        $this->assertEquals('default', $obj->containerGet('not__key','default'));
+        $this->assertEquals('a_value', $obj->containerGet('a_key', 'ignore default'));
+        $this->assertEquals('default', $obj->containerGet('not__key', 'default'));
     }
     
     public function testcontainerGetWithEmptyContainer()
@@ -36,6 +36,6 @@ class ContainerAwareTraitTest extends TestCase
         $obj = new class() {
             use \uSilex\ContainerAwareTrait;
         };
-        $this->assertEquals('default', $obj->containerGet('not_key','default'));
+        $this->assertEquals('default', $obj->containerGet('not_key', 'default'));
     }
 }

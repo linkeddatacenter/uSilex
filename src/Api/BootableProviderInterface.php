@@ -15,7 +15,7 @@ use Pimple\Container;
 
 /**
  * Interface for bootable service providers.
- * 
+ *
  */
 interface BootableProviderInterface
 {

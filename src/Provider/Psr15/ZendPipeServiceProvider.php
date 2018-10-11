@@ -49,13 +49,13 @@ class ZendPipeServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $app)
     {
-        $app['piper'] = function() {
+        $app['piper'] = function () {
             return new MiddlewarePipe();
         };
         
         $app['handler.queue'] = [];
         
-        $app['uSilex.httpHandler'] = function($app) {
+        $app['uSilex.httpHandler'] = function ($app) {
             $piper = $app['piper'];
             foreach ($app['handler.queue'] as $middlewareService) {
                 $piper->pipe($app[$middlewareService]);
