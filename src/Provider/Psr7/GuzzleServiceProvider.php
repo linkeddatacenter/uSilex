@@ -14,30 +14,30 @@ namespace uSilex\Provider\Psr7;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\ServerRequestFactory;
+use GuzzleHttp\Psr7\ServerRequest;
+use GuzzleHttp\Psr7\Response;
 use Zend\HttpHandlerRunner\Emitter\SapiStreamEmitter;
-use Zend\Diactoros\Response\TextResponse;
 use Exception;
 
 /**
- * This service provider uses Zend\Diactoros  to resolve uSilex as PSR-7 dependencies.
+ * This service provider uses Guzzle\PSr7 to resolve uSilex as PSR-7 dependencies.
  *
  * As default, uSilex.responseEmitter uses SapiStreamEmitter class.
  *
- * As default, uSilex.exceptionHandler uses TextResponse as custom response with 500 as error code.
+ * As default, uSilex.exceptionHandler uses JsonResponse as custom response with 500 as error code.
  *
  *
  * Add this dependencies to your project:
  *
- * composer require zendframework/zend-diactoros
+ * composer require guzzlehttp/Psr7
  * composer require zendframework/zend-httphandlerrunner
  *
  * USAGE:
- *     $app->register( new \uSilex\Provider\Psr7\DiactorosProvider() );
+ *     $app->register( new \uSilex\Provider\Psr7\GuzzleProvider() );
  *
  */
 
-class DiactorosServiceProvider implements ServiceProviderInterface
+class GuzzleServiceProvider implements ServiceProviderInterface
 {
 
     
@@ -47,7 +47,7 @@ class DiactorosServiceProvider implements ServiceProviderInterface
     public function register(Container $app)
     {
         $app['uSilex.request'] = function () {
-            return ServerRequestFactory::fromGlobals();
+            return ServerRequest::fromGlobals();
         };
         
         $app['uSilex.responseEmitter'] = $app->protect(function ($response) {
@@ -55,7 +55,7 @@ class DiactorosServiceProvider implements ServiceProviderInterface
         });
               
         $app['uSilex.exceptionHandler'] = $app->protect(function ($e) {
-            return new TextResponse($e->getMessage(), 500);
+            return new Response(500, [], $e->getMessage());
         });
     }
 }

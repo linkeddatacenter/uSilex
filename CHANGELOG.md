@@ -9,6 +9,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Guzzle PSR7 implementation
+
+### Changed
+
+- Default emitter now uses SapiStreamEmitter
+
+
+## [1.1.0] 2018-10-12
+
+### Added
+
 - ContainerAware trait
 - PSR-11 implementation in Application
 - BootableProviderInterface
@@ -46,6 +57,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 First release. 
 
 
-[Unreleased]: https://github.com/linkeddatacenter/uSilex/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/linkeddatacenter/uSilex/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/linkeddatacenter/uSilex/compare/1.2.0...1.1.0
 [1.1.0]: https://github.com/linkeddatacenter/uSilex/compare/1.0.1...1.1.0
 [1.0.1]: https://github.com/linkeddatacenter/uSilex/compare/1.0.0...1.0.1
