@@ -42,7 +42,7 @@ class GuzzleServiceProviderTest extends TestCase
     {
         $app = new Application;
         $app->register(new GuzzleServiceProvider());
-        $response = new Response(200,[],'ok response');
+        $response = new Response(200, [], 'ok response');
         $app['uSilex.responseEmitter']($response, $app);
         $this->expectOutputString('ok response');
     }

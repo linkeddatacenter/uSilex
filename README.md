@@ -200,10 +200,9 @@ Install [docker](https://www.docker.com/) and run
 docker run --rm -ti -p 8000:8000 -v $PWD/.:/app composer bash
 composer cs-fix
 composer test
+composer coverage
 composer examples
 # Until ctr-c is pressed, point your browser to http://localhost:8000/examples/
-composer coverage
-# Until ctr-c is pressed, see coverage report at http://localhost:8000/
 exit
 ```
 

@@ -55,10 +55,9 @@ type `ctrl-c` to stop server.
 To get code html coverage information execute the following command:
 
 ```sh
-docker run --rm -ti -p 8000:8000 -v $PWD/.:/app composer composer coverage
+docker run --rm -ti  -v $PWD/.:/app composer composer coverage
 ```
 
-See coverage test report pointing your browser to http://localhost:8000/
+See coverage test report pointing your browser to coverage/index.html file
 
-type `ctrl-c` to stop server.
 

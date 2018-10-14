@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [1.1.0]
+## [1.2.0]
 
 ### Added
 
@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Default emitter now uses SapiStreamEmitter
+- composer coverage just creates static html files (no execution of server)
 
 
 ## [1.1.0] 2018-10-12
