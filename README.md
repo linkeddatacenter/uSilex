@@ -74,10 +74,9 @@ class MyMiddleware implements MiddlewareInterface
 }  
 ```
 
-µSilex provides two ready to use anti-pattern traits: \uSilex\Psr11Trait that implements a PSR-11 interface and \uSilex\ContainerAwareTrait that attach a PSR-11 container (e.g a µSilex Application) to any object. 
 
 µSilex is not bound to any specific specific implementations (apart from Pimple) nor 
-provides any middleware implementation.
+to any middleware implementation.
 
 Instead µSilex realizes a framework to use existing standard implementations. µSilex adopts PSR-7 specifications for http messages, PSR-15 for managing http handles and middleware and PSR-11 for containers.
 
@@ -125,7 +124,12 @@ to implement yours.
 
 #### Provider\Psr7\DiactorosServiceProvider
 
-Bound a µSilex application to the [Zend Diactoros]() implementation for Psr7 specifications.
+Bound a µSilex application to the [Zend Diactoros](https://docs.zendframework.com/zend-diactoros/) implementation for Psr7 specifications.
+
+#### Provider\Psr7\GuzzleServiceProvider
+
+Bound a µSilex application to the [Guzzle](http://docs.guzzlephp.org/en/stable/psr7.html) implementation for Psr7 specifications.
+
 
 #### Provider\Psr15\RelayServiceProvider
 
@@ -157,6 +161,11 @@ $app['uSilex.httpHandler'] = function($app) {
 };
 $app->boot()->run();
 ```
+
+### Other tools
+
+µSilex also provides two ready to use anti-pattern traits: \uSilex\Psr11Trait that implements a PSR-11 interface and \uSilex\ContainerAwareTrait that attach a PSR-11 container (e.g a µSilex Application) to any object. 
+
 
 ## A complete example
 
