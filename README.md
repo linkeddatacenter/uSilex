@@ -223,5 +223,5 @@ Please see  [CONTRIBUTING](CONTRIBUTING.md) for contributing details.
 µSilex is inspired by the following projects:
 
 - https://github.com/php-fig/fig-standards/
-- https://github.com/pimple/pimple and https://github.com/silexphp/Silex projects by Fabien Potencier
+- https://pimple.symfony.com/ and https://github.com/silexphp/Silex projects by Fabien Potencier
 - https://github.com/relayphp/Relay.Relay project
